@@ -1,9 +1,5 @@
-const cluster = require('cluster');
 const path = require('path');
-const totalCPUs = require('os').cpus().length;
 const helmet = require('helmet');
-const axios = require('axios');
-const compression = require('compression');
 const { logger } = require('./config/logger');
 const { connectToFabric } = require('./utils/gateway');
 
@@ -11,6 +7,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 require('dotenv').config();
 
+const consumerRoutes = require('./routes/consumer')
 connectToFabric();
 
 const express = require('express');
@@ -38,6 +35,7 @@ app.get('/', (req, res) => {
 	res.send('🌐🌐');
 });
 
+app.use('/api/consumer', consumerRoutes);
 //error middleware
 app.use(notFound);
 app.use(errorHandler);
