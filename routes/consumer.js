@@ -1,7 +1,6 @@
 const {
 	getConsumerById,
 	getAllConsumers,
-	getConsumer,
 	postConsumer,
 	deleteConsumer,
 	updateConsumer
@@ -12,7 +11,7 @@ const router = require('express').Router()
 //standard get & post
 router.post('/', postConsumer)
 router.get('/', getAllConsumers)
-router.get('/:ConsumerId', getConsumer)
+router.get('/:ConsumerId', getConsumerById)
 router.put('/:ConsumerId', updateConsumer)
 router.delete('/:ConsumerId', deleteConsumer)
 
