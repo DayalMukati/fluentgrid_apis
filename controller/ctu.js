@@ -2,64 +2,64 @@
 const ObjectID = require("bson-objectid");
 const Gateway = require('../utils/gateway');
 
-exports.getConsumerById = async (req, res, next, id) => {
+exports.getctuById = async (req, res, next, id) => {
 	try {
-		const consumer = await Gateway.evaluateTransaction("GetbyId", id, "Consumer");
-		req.consumer = consumer[0]
+		const ctu = await Gateway.evaluateTransaction("GetbyId", id, "ctu");
+		req.ctu = ctu[0]
 		next()
 	} catch (error) {
 		next(error)
 	}
 }
-exports.getAllConsumers = async (req, res, next) => {
+exports.getAllCtus = async (req, res, next) => {
 	try {
-		const consumeres = await Gateway.evaluateTransaction("GetAll", "Consumer");
+		const ctues = await Gateway.evaluateTransaction("GetAll", "ctu");
 		res.json({
 			success: true,
-			data: consumeres
+			data: ctues
 		})
 	} catch (error) {
 		next(error)
 	}
 }
-exports.getConsumer = async (req, res, next) => {
+exports.getctu = async (req, res, next) => {
 	try {
-		//res.json(req.consumer)
-		res.status(200).json(req.consumer);
+		//res.json(req.ctu)
+		res.status(200).json(req.ctu);
 	} catch (error) {
 		next(error)
 	}
 }
-exports.postConsumer = async (req, res, next) => {
+exports.postctu = async (req, res, next) => {
 	try {
 		req.body.id = new ObjectID().toHexString();
 		const {
-			consumer
-		} = await Gateway.submitTransaction("AddConsumer", JSON.stringify(req.body));
+			ctu
+		} = await Gateway.submitTransaction("Addctu", JSON.stringify(req.body));
 		res.json({
 			success: true,
 			data: {
-				savedConsumer: consumer
+				savedctu: ctu
 			}
 		})
 	} catch (error) {
 		next(error)
 	}
 }
-exports.updateConsumer = async (req, res, next) => {
+exports.updatectu = async (req, res, next) => {
 	try {
 		// put req.body into  update function and send back to client
-		req.body.id = req.params.consumerId
-		const consumer = await Gateway.submitTransaction("UpdateConsumer", JSON.stringify(req.body))
-		res.json(consumer)
+		req.body.id = req.params.ctuId
+		const ctu = await Gateway.submitTransaction("Updatectu", JSON.stringify(req.body))
+		res.json(ctu)
 	} catch (error) {
 		next(error)
 	}
 }
-exports.deleteConsumer = async (req, res, next) => {
+exports.deletectu = async (req, res, next) => {
 	try {
 		// put req.body into  update function and send back to client
-		await Gateway.deleteTransaction("DeleteAsset", req.consumer.id)
+		await Gateway.deleteTransaction("DeleteAsset", req.ctu.id)
 		res.json({
 			msg: 'Item Deleted'
 		})
@@ -67,23 +67,23 @@ exports.deleteConsumer = async (req, res, next) => {
 		next(error)
 	}
 }
-exports.getConsumerByUserId = async (req, res, next) => {
+exports.getctuByUserId = async (req, res, next) => {
 	try {
-		const consumeres = await Gateway.evaluateTransaction("Find", JSON.stringify({
+		const ctues = await Gateway.evaluateTransaction("Find", JSON.stringify({
 			user: req.user.id
-		}), "Consumer")
-		if (consumeres.length > 0) {
-			for (let i = 0; i < consumeres.length; i++) {
-				if (consumeres[i].isDefaultConsumer == true) {
+		}), "ctu")
+		if (ctues.length > 0) {
+			for (let i = 0; i < ctues.length; i++) {
+				if (ctues[i].isDefaultctu == true) {
 					res.json({
 						success: true,
-						data: consumeres[i]
+						data: ctues[i]
 					});
 				}
 			}
 		} else {
 			res.status(400).json({
-				msg: "No consumer found"
+				msg: "No ctu found"
 			})
 		}
 
