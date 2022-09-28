@@ -21,7 +21,7 @@ const {
 var ObjectID = require('bson-objectid');
 
 const channelName = 'channelone';
-const chaincodeName = 'chaincode1';
+const chaincodeName = 'chaincode2';
 const mspId = 'MULMUNDRAMSP';
 const walletPath = path.join(__dirname, '../wallet');
 const caHostName = 'ca.mulmundra.mpower.in';

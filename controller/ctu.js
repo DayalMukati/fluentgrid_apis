@@ -12,19 +12,20 @@ exports.getCtuById = async (req, res, next, id) => {
 	}
 }
 
-exports.getCtu = async(req, res, next, name) => {
+exports.getCtubyName = async(req, res, next, name) => {
 	try {
 		console.log(name, "name")
-		const ctu = await Gateway.evaluateTransaction("GetbyId", name, "ctu");
-		req.ctu = ctu[0]
-		next()
-		// const ctu = await Gateway.evaluateTransaction(
-		// 	'Find',
-		// 	JSON.stringify({
-		// 		Name: name,
-		// 	}),
-		// 	'ctu'
-		// );
+		// const ctu = await Gateway.evaluateTransaction("GetbyId", name, "ctu");
+		// req.ctu = ctu[0]
+		// next()
+		const ctu = await Gateway.evaluateTransaction(
+			'Find',
+			JSON.stringify({
+				Name: name,
+			}),
+			'ctu'
+		);
+		res.status(200).json(ctu);
 	}catch(error) {
 		next(error)
 	}
@@ -43,13 +44,17 @@ exports.getAllCtus = async (req, res, next) => {
 exports.postCtu = async (req, res, next) => {
 	try {
 		req.body.id = new ObjectID().toHexString();
+		req.body.docType = "ctu";
+		const id = req.body.id;
 		const {
 			ctu
 		} = await Gateway.submitTransaction("CreateData", JSON.stringify(req.body));
+		const savedCtu = await Gateway.evaluateTransaction("GetbyId", id, "ctu");
+
 		res.json({
 			success: true,
 			data: {
-				savedCtu: ctu
+				savedCtu: savedCtu[0]
 			}
 		})
 	} catch (error) {
@@ -59,9 +64,9 @@ exports.postCtu = async (req, res, next) => {
 exports.updateCtu = async (req, res, next) => {
 	try {
 		// put req.body into  update function and send back to client
-		req.body.id = req.params.CtuId
-		const Ctu = await Gateway.submitTransaction("UpdateConsumer", JSON.stringify(req.body))
-		res.json(consumer)
+		req.body.id = req.params.CtuId;
+		const Ctu = await Gateway.submitTransaction("UpdateData", JSON.stringify(req.body))
+		res.json(Ctu)
 	} catch (error) {
 		next(error)
 	}

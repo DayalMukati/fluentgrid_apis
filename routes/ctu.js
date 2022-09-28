@@ -4,18 +4,19 @@ const {
 	postCtu,
 	deleteCtu,
 	updateCtu,
-    getCtu
+    getCtubyName
 } = require('../controller/ctu.js')
 
 const router = require('express').Router()
 
+router.param('name', getCtubyName);
+router.param('ctuId', getCtuById)
 //standard get & post
 router.post('/', postCtu)
 router.get('/', getAllCtus)
-router.get('/:ctuId', getCtuById)
+router.get('/:name', getCtubyName)
 router.put('/:ctuId', updateCtu)
 router.delete('/:ctuId', deleteCtu),
-router.get('/:name', getCtu)
 
 
 module.exports = router

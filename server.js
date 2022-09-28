@@ -10,6 +10,12 @@ require('dotenv').config();
 //import routes
 const consumerRoutes = require('./routes/consumer');
 const ctuRoutes = require('./routes/ctu');
+const gencoRoutes = require('./routes/genco');
+const nmaRoutes = require('./routes/nma');
+const rldcRoutes = require('./routes/rldc');
+const sldcRoutes = require('./routes/sldc');
+const stuRoutes = require('./routes/stu');
+
 connectToFabric();
 
 const express = require('express');
@@ -40,6 +46,11 @@ app.get('/', (req, res) => {
 //Routes
 app.use('/api/consumer', consumerRoutes);
 app.use('/api/ctu', ctuRoutes);
+app.use('/api/genco', gencoRoutes);
+app.use('/api/nma', nmaRoutes);
+app.use('/api/rldc', rldcRoutes);
+app.use('/api/sldc', sldcRoutes);
+app.use('/api/stu', stuRoutes);
 //error middleware
 app.use(notFound);
 app.use(errorHandler);

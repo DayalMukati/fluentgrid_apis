@@ -1,19 +1,22 @@
 const {
-	getNMAById,
-	getAllNMAs,
-	postNMA,
-	deleteNMA,
-	updateNMA
+    getNmaById,
+	getAllNmas,
+	postNma,
+	deleteNma,
+	updateNma,
+    getNmabyName
 } = require('../controller/nma.js')
 
 const router = require('express').Router()
 
+router.param('name', getNmabyName);
+router.param('nmaId', getNmaById)
 //standard get & post
-router.post('/', postNMA)
-router.get('/', getAllNMAs)
-router.get('/:NMAId', getNMAById)
-router.put('/:NMAId', updateNMA)
-router.delete('/:NMAId', deleteNMA)
+router.post('/', postNma)
+router.get('/', getAllNmas)
+router.get('/:name', getNmabyName)
+router.put('/:nmaId', updateNma)
+router.delete('/:nmaId', deleteNma),
 
 
 module.exports = router
