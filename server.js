@@ -7,7 +7,9 @@ const cors = require('cors');
 const morgan = require('morgan');
 require('dotenv').config();
 
-const consumerRoutes = require('./routes/consumer')
+//import routes
+const consumerRoutes = require('./routes/consumer');
+const ctuRoutes = require('./routes/ctu');
 connectToFabric();
 
 const express = require('express');
@@ -35,7 +37,9 @@ app.get('/', (req, res) => {
 	res.send('🌐🌐');
 });
 
+//Routes
 app.use('/api/consumer', consumerRoutes);
+app.use('/api/ctu', ctuRoutes);
 //error middleware
 app.use(notFound);
 app.use(errorHandler);

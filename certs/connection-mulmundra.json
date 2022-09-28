@@ -1,0 +1,48 @@
+{
+    "name": "mpower-network-mulmundra",
+    "version": "1.0.0",
+    "client": {
+        "organization": "mulmundra",
+            "timeout": {
+                "peer": {
+                    "endorser": "300"
+                }
+            }
+        }
+    },
+    "organizations": {
+        "mulmundra": {
+            "mspid": "MULMUNDRAMSP",
+            "peers": [
+                "peer0.mulmundra.mpower.in"
+            ],
+            "certificateAuthorities": [
+                "ca.mulmundra.mpower.in"
+            ]
+        }
+    },
+    "peers": {
+        "peer0.mulmundra.mpower.in": {
+            "url": "grpcs://localhost:7051",
+            "tlsCACerts": {
+                "pem": "-----BEGIN CERTIFICATE-----\nMIICMjCCAdmgAwIBAgIUFEViUE9ZYW3+K+5bQRC0OWgD69AwCgYIKoZIzj0EAwIw\ndjELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMQ8wDQYDVQQH\nEwZEdXJoYW0xHDAaBgNVBAoTE211bG11bmRyYS5tcG93ZXIuaW4xHzAdBgNVBAMT\nFmNhLm11bG11bmRyYS5tcG93ZXIuaW4wHhcNMjIwOTI3MDM1NDAwWhcNMzcwOTIz\nMDM1NDAwWjB2MQswCQYDVQQGEwJVUzEXMBUGA1UECBMOTm9ydGggQ2Fyb2xpbmEx\nDzANBgNVBAcTBkR1cmhhbTEcMBoGA1UEChMTbXVsbXVuZHJhLm1wb3dlci5pbjEf\nMB0GA1UEAxMWY2EubXVsbXVuZHJhLm1wb3dlci5pbjBZMBMGByqGSM49AgEGCCqG\nSM49AwEHA0IABLmhvnt8QjGffnJ3VIjnN1XIAqNakpS0wxTkM0AW0s6jswA/IZkf\nhh6zgHenlvScyvy1k97Xmp9szbyJ2ywpTaijRTBDMA4GA1UdDwEB/wQEAwIBBjAS\nBgNVHRMBAf8ECDAGAQH/AgEBMB0GA1UdDgQWBBQ/mH3QRHkwvBn65rGo/cQAdF+L\nEjAKBggqhkjOPQQDAgNHADBEAiArpid54ycTCCrceCtKajko0dFx2ASD2E0y3ghk\nM/XW3QIgTyle9bITAKfX2nrWPoiSYH1GIqfBk+JBJczTRNoRrOk=\n-----END CERTIFICATE-----\n"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "peer0.mulmundra.mpower.in",
+                "hostnameOverride": "peer0.mulmundra.mpower.in"
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.mulmundra.mpower.in": {
+            "url": "https://localhost:7054",
+            "caName": "ca-mulmundra",
+            "tlsCACerts": {
+                "pem": ["-----BEGIN CERTIFICATE-----\nMIICMjCCAdmgAwIBAgIUFEViUE9ZYW3+K+5bQRC0OWgD69AwCgYIKoZIzj0EAwIw\ndjELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMQ8wDQYDVQQH\nEwZEdXJoYW0xHDAaBgNVBAoTE211bG11bmRyYS5tcG93ZXIuaW4xHzAdBgNVBAMT\nFmNhLm11bG11bmRyYS5tcG93ZXIuaW4wHhcNMjIwOTI3MDM1NDAwWhcNMzcwOTIz\nMDM1NDAwWjB2MQswCQYDVQQGEwJVUzEXMBUGA1UECBMOTm9ydGggQ2Fyb2xpbmEx\nDzANBgNVBAcTBkR1cmhhbTEcMBoGA1UEChMTbXVsbXVuZHJhLm1wb3dlci5pbjEf\nMB0GA1UEAxMWY2EubXVsbXVuZHJhLm1wb3dlci5pbjBZMBMGByqGSM49AgEGCCqG\nSM49AwEHA0IABLmhvnt8QjGffnJ3VIjnN1XIAqNakpS0wxTkM0AW0s6jswA/IZkf\nhh6zgHenlvScyvy1k97Xmp9szbyJ2ywpTaijRTBDMA4GA1UdDwEB/wQEAwIBBjAS\nBgNVHRMBAf8ECDAGAQH/AgEBMB0GA1UdDgQWBBQ/mH3QRHkwvBn65rGo/cQAdF+L\nEjAKBggqhkjOPQQDAgNHADBEAiArpid54ycTCCrceCtKajko0dFx2ASD2E0y3ghk\nM/XW3QIgTyle9bITAKfX2nrWPoiSYH1GIqfBk+JBJczTRNoRrOk=\n-----END CERTIFICATE-----\n"]
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        }
+    }
+}

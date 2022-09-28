@@ -20,12 +20,12 @@ const {
 } = require('express');
 var ObjectID = require('bson-objectid');
 
-const channelName = 'goldchannel';
-const chaincodeName = 'iac';
-const mspId = 'Org1MSP';
+const channelName = 'channelone';
+const chaincodeName = 'chaincode1';
+const mspId = 'MULMUNDRAMSP';
 const walletPath = path.join(__dirname, '../wallet');
-const caHostName = 'ca.org1.example.com';
-const appUserId = 'appUser2';
+const caHostName = 'ca.mulmundra.mpower.in';
+const appUserId = 'appUser1';
 const {
 	logger
 } = require('./../config/logger')
@@ -121,7 +121,7 @@ exports.getContract = async () => {
 			wallet,
 			mspId,
 			appUserId,
-			'org1.department1'
+			'mulmundra.department1'
 		);
 
 		// Create a new gateway instance for interacting with the fabric network.
@@ -169,7 +169,7 @@ exports.connectToFabric = async () => {
 			identity: appUserId,
 			discovery: {
 				enabled: true,
-				asLocalhost: false
+				asLocalhost: true
 			}
 
 		});

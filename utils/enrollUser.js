@@ -20,7 +20,7 @@ const {
 	buildWallet
 } = require('../utils/AppUtil.js');
 
-const mspOrg1 = 'Org1MSP';
+const mspOrg1 = 'MULMUNDRAMSP';
 const walletPath = path.join(__dirname, '../wallet');
 
 async function registerUser(userId) {
@@ -32,7 +32,7 @@ async function registerUser(userId) {
 
 		// build an instance of the fabric ca services client based on
 		// the information in the network configuration
-		const caClient = buildCAClient(FabricCAServices, ccp, 'ca.org1.example.com');
+		const caClient = buildCAClient(FabricCAServices, ccp, 'ca.mulmundra.mpower.in');
 
 		// setup the wallet to hold the credentials of the application user
 		const wallet = await buildWallet(Wallets, walletPath);
@@ -57,5 +57,5 @@ async function registerUser(userId) {
 }
 
 module.exports = registerUser;
-registerUser('appUser2');
+registerUser('appUser1');
 // registerHDFCUser('operator1','hdfc.operator');
