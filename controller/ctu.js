@@ -2,9 +2,15 @@
 const ObjectID = require("bson-objectid");
 const Gateway = require('../utils/gateway');
 
-exports.getCtuById = async (req, res, next, id) => {
+exports.getCtuById = async (req, res, next, name) => {
 	try {
-		const ctu = await Gateway.evaluateTransaction("GetbyId", id, "ctu");
+		const ctu = await Gateway.evaluateTransaction(
+			'Find',
+			JSON.stringify({
+				Name: name,
+			}),
+			'ctu'
+		);
 		req.ctu = ctu[0]
 		next()
 	} catch (error) {
@@ -63,10 +69,18 @@ exports.postCtu = async (req, res, next) => {
 }
 exports.updateCtu = async (req, res, next) => {
 	try {
-		// put req.body into  update function and send back to client
-		req.body.id = req.params.CtuId;
-		const Ctu = await Gateway.submitTransaction("UpdateData", JSON.stringify(req.body))
-		res.json(Ctu)
+		var ctuObj  = req.ctu;
+		if(req.ctu.PoCLossCharges){
+			ctuObj['PoCLossCharges'].push(req.body.PoCLossCharges);
+		}
+		if(req.ctu.CTUWallet){
+			ctuObj['CTUWallet'].push(req.body.CTUWallet);
+		}
+		await Gateway.submitTransaction(
+			'UpdateData',
+			JSON.stringify(ctuObj)
+		);
+		res.status(201).json(ctuObj);
 	} catch (error) {
 		next(error)
 	}
