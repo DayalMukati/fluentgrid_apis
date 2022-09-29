@@ -20,10 +20,6 @@ exports.getCtuById = async (req, res, next, name) => {
 
 exports.getCtubyName = async(req, res, next, name) => {
 	try {
-		console.log(name, "name")
-		// const ctu = await Gateway.evaluateTransaction("GetbyId", name, "ctu");
-		// req.ctu = ctu[0]
-		// next()
 		const ctu = await Gateway.evaluateTransaction(
 			'Find',
 			JSON.stringify({
@@ -31,7 +27,18 @@ exports.getCtubyName = async(req, res, next, name) => {
 			}),
 			'ctu'
 		);
-		res.status(200).json(ctu);
+		if(!ctu[0]){
+			res.status(400).json({
+				success: false,
+				msg: "No Record Found"
+			})
+		}else{
+			res.status(200).json({
+				success: true,
+				ctu: ctu[0]
+				});
+		}
+
 	}catch(error) {
 		next(error)
 	}
@@ -52,17 +59,27 @@ exports.postCtu = async (req, res, next) => {
 		req.body.id = new ObjectID().toHexString();
 		req.body.docType = "ctu";
 		const id = req.body.id;
-		const {
-			ctu
-		} = await Gateway.submitTransaction("CreateData", JSON.stringify(req.body));
+		const duplicateCtu = await Gateway.evaluateTransaction(
+			'Find',
+			JSON.stringify({
+				Name: req.body.Name,
+			}),
+			'ctu'
+		);
+	if(!duplicateCtu[0]){
+		await Gateway.submitTransaction("CreateData", JSON.stringify(req.body));
 		const savedCtu = await Gateway.evaluateTransaction("GetbyId", id, "ctu");
 
-		res.json({
+		res.status(201).json({
 			success: true,
-			data: {
-				savedCtu: savedCtu[0]
-			}
+			savedCtu: savedCtu[0]
 		})
+	}else {
+		res.status(400).json({
+			success: false,
+			meg: "Duplicate Record Found"
+			})
+	}
 	} catch (error) {
 		next(error)
 	}
@@ -70,9 +87,9 @@ exports.postCtu = async (req, res, next) => {
 exports.updateCtu = async (req, res, next) => {
 	try {
 		var ctuObj  = req.ctu;
-		if(req.ctu.PoCLossCharges){
-			ctuObj['PoCLossCharges'].push(req.body.PoCLossCharges);
-		}
+		// if(req.ctu.PoCLossCharges){
+		// 	ctuObj['PoCLossCharges'].push(req.body.PoCLossCharges);
+		// }
 		if(req.ctu.CTUWallet){
 			ctuObj['CTUWallet'].push(req.body.CTUWallet);
 		}
@@ -80,7 +97,10 @@ exports.updateCtu = async (req, res, next) => {
 			'UpdateData',
 			JSON.stringify(ctuObj)
 		);
-		res.status(201).json(ctuObj);
+		res.status(201).json({
+			success: true,
+			updatedCtu: ctuObj
+		});
 	} catch (error) {
 		next(error)
 	}
