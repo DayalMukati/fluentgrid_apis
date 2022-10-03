@@ -57,5 +57,5 @@ async function registerUser(userId) {
 }
 
 module.exports = registerUser;
-registerUser('appUser1');
+//registerUser('appUser1');
 // registerHDFCUser('operator1','hdfc.operator');

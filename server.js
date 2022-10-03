@@ -15,8 +15,9 @@ const nmaRoutes = require('./routes/nma');
 const rldcRoutes = require('./routes/rldc');
 const sldcRoutes = require('./routes/sldc');
 const stuRoutes = require('./routes/stu');
+const adminRoutes = require('./routes/admin');
 
-connectToFabric();
+//connectToFabric();
 
 const express = require('express');
 const app = express();
@@ -51,6 +52,9 @@ app.use('/api/nma', nmaRoutes);
 app.use('/api/rldc', rldcRoutes);
 app.use('/api/sldc', sldcRoutes);
 app.use('/api/stu', stuRoutes);
+app.use('/api/auth', adminRoutes);
+
+
 //error middleware
 app.use(notFound);
 app.use(errorHandler);

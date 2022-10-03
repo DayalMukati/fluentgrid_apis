@@ -14,14 +14,14 @@ const {
 const {
 	buildCCP,
 	buildWallet
-} = require('../utils/AppUtil.js');
+} = require('./AppUtil.js');
 const {
 	response
 } = require('express');
 var ObjectID = require('bson-objectid');
 
 const channelName = 'channelone';
-const chaincodeName = 'chaincode2';
+const chaincodeName = 'chaincode';
 const mspId = 'MULMUNDRAMSP';
 const walletPath = path.join(__dirname, '../wallet');
 const caHostName = 'ca.mulmundra.mpower.in';
@@ -34,13 +34,12 @@ function prettyJSONString(inputString) {
 	return JSON.stringify(JSON.parse(inputString), null, 2);
 }
 
-exports.evaluateTransaction = async (transactionName, ...args) => {
-	// Get the contract from the network.network.
-	//const [contract, gateway] = await getContract();
-
-	// Let's try a query type operation (function).
-	// This will be sent to just one peer and the results will be shown.
+exports.evaluateTransaction = async (org, appUserId, channelName,
+	chaincodeName, transactionName, ...args) => {
 	try {
+		
+		await connectToFabric(org, appUserId, channelName,
+			chaincodeName,)
 		logger.info(
 			`\n--> Evaluate Transaction: ${transactionName} for args ${args}`
 		);
@@ -57,10 +56,13 @@ exports.evaluateTransaction = async (transactionName, ...args) => {
 	}
 };
 
-exports.submitTransaction = async (transactionName, ...args) => {
+exports.submitTransaction = async (org, appUserId, channelName,
+	chaincodeName,transactionName, ...args) => {
 	// Get the contract from the network.network.
 	//const [contract, gateway] = await getContract();
 	try {
+		await connectToFabric(org, appUserId, channelName,
+			chaincodeName,)
 		logger.info(
 			`\n--> Submit Transaction: ${transactionName} with args ${args}`
 		);
@@ -156,11 +158,11 @@ exports.getContract = async () => {
 
 let gateway;
 let contract;
-exports.connectToFabric = async () => {
+async function connectToFabric(org, appUserId, channelName,
+	chaincodeName) {
 	try {
-		const ccp = buildCCP();
+		const ccp = buildCCP(org);
 		const wallet = await buildWallet(Wallets, walletPath);
-		//const ccpPath = path.resolve(__dirname, '..', 'certs', 'connection-org1.json');
 
 		gateway = new Gateway();
 
@@ -186,3 +188,5 @@ exports.connectToFabric = async () => {
 		logger.error('Database Error =>', err)
 	}
 }
+
+//connectToFabric();

@@ -12,10 +12,10 @@ const router = require('express').Router()
 router.param('name', getNmabyName);
 router.param('nmaId', getNmaById)
 //standard get & post
-router.post('/', postNma)
-router.get('/', getAllNmas)
-router.get('/:name', getNmabyName)
-router.put('/:nmaId', updateNma)
+router.post('/:appUserId/:org/:channelName/:chaincodeName', postNma)
+router.get('/:appUserId/:org/:channelName/:chaincodeName', getAllNmas)
+router.get('/:name/:appUserId/:org/:channelName/:chaincodeName', getNmabyName)
+router.put('/:nmaId/:appUserId/:org/:channelName/:chaincodeName', updateNma)
 router.delete('/:nmaId', deleteNma),
 
 

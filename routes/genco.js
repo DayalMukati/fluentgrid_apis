@@ -12,10 +12,10 @@ const router = require('express').Router()
 router.param('name', getGencobyName);
 router.param('gencoId', getGencoById)
 //standard get & post
-router.post('/', postGenco)
-router.get('/', getAllGencos)
-router.get('/:name', getGencobyName)
-router.put('/:gencoId', updateGenco)
+router.post('/:appUserId/:org/:channelName/:chaincodeName', postGenco)
+router.get('/:appUserId/:org/:channelName/:chaincodeName', getAllGencos)
+router.get('/:name/:appUserId/:org/:channelName/:chaincodeName', getGencobyName)
+router.put('/:gencoId/:appUserId/:org/:channelName/:chaincodeName', updateGenco)
 router.delete('/:gencoId', deleteGenco),
 
 

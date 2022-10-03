@@ -41,4 +41,4 @@ async function enrollAppAdmin() {
 }
 
 module.exports = enrollAppAdmin;
-enrollAppAdmin();
+//enrollAppAdmin();

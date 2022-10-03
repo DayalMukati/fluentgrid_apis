@@ -1,93 +1,187 @@
-
 const ObjectID = require("bson-objectid");
-const Gateway = require('../utils/gateway');
+const Gateway = require("../utils/gateway");
 
-exports.getConsumerById = async (req, res, next, id) => {
-	try {
-		const consumer = await Gateway.evaluateTransaction("GetbyId", id, "Consumer");
-		req.consumer = consumer[0]
-		next()
-	} catch (error) {
-		next(error)
-	}
-}
+exports.getConsumerById = async (req, res, next, accountNo) => {
+  try {
+    const consumer = await Gateway.evaluateTransaction(req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        AccountNo: accountNo,
+      }),
+      "consumer"
+    );
+    req.consumer = consumer[0];
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getConsumerbyName = async (req, res, next, name) => {
+  try {
+    console.log(req.params)
+    const consumer = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        Name: name,
+      }),
+      "consumer"
+    );
+    if (!consumer[0]) {
+      res.status(400).json({
+        success: false,
+        msg: "No Record Found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        consumer: consumer[0],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 exports.getAllConsumers = async (req, res, next) => {
-	try {
-		const consumeres = await Gateway.evaluateTransaction("GetAll", "Consumer");
-		res.json({
-			success: true,
-			data: consumeres
-		})
-	} catch (error) {
-		next(error)
-	}
-}
-exports.getConsumer = async (req, res, next) => {
-	try {
-		//res.json(req.consumer)
-		res.status(200).json(req.consumer);
-	} catch (error) {
-		next(error)
-	}
-}
+  try {
+    const consumers = await Gateway.evaluateTransaction(req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "GetAll", "consumer");
+    res.json({
+      success: true,
+      data: consumers,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 exports.postConsumer = async (req, res, next) => {
-	try {
-		req.body.id = new ObjectID().toHexString();
-		const {
-			consumer
-		} = await Gateway.submitTransaction("AddConsumer", JSON.stringify(req.body));
-		res.json({
-			success: true,
-			data: {
-				savedConsumer: consumer
-			}
-		})
-	} catch (error) {
-		next(error)
-	}
-}
-exports.updateConsumer = async (req, res, next) => {
-	try {
-		// put req.body into  update function and send back to client
-		req.body.id = req.params.consumerId
-		const consumer = await Gateway.submitTransaction("UpdateConsumer", JSON.stringify(req.body))
-		res.json(consumer)
-	} catch (error) {
-		next(error)
-	}
-}
-exports.deleteConsumer = async (req, res, next) => {
-	try {
-		// put req.body into  update function and send back to client
-		await Gateway.deleteTransaction("DeleteAsset", req.consumer.id)
-		res.json({
-			msg: 'Item Deleted'
-		})
-	} catch (error) {
-		next(error)
-	}
-}
-exports.getConsumerByUserId = async (req, res, next) => {
-	try {
-		const consumeres = await Gateway.evaluateTransaction("Find", JSON.stringify({
-			user: req.user.id
-		}), "Consumer")
-		if (consumeres.length > 0) {
-			for (let i = 0; i < consumeres.length; i++) {
-				if (consumeres[i].isDefaultConsumer == true) {
-					res.json({
-						success: true,
-						data: consumeres[i]
-					});
-				}
-			}
-		} else {
-			res.status(400).json({
-				msg: "No consumer found"
-			})
-		}
+  try {
+    req.body.id = new ObjectID().toHexString();
+    req.body.docType = "consumer";
+    const id = req.body.id;
+    const duplicateConsumer = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        Name: req.body.Name,
+      }),
+      "consumer"
+    );
+    if (!duplicateConsumer[0]) {
+      await Gateway.submitTransaction(req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "CreateData", JSON.stringify(req.body));
+      const savedConsumer = await Gateway.evaluateTransaction(req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "Find",
+        JSON.stringify({
+          id: id,
+        }),
+        "consumer");
 
+      res.status(201).json({
+        success: true,
+        savedConsumer: savedConsumer[0],
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        meg: "Duplicate Record Found",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+exports.updateConsumer = async (req, res, next) => {
+  try {
+    var consumerObj = req.consumer;
+    // if(req.consumer.PoCLossCharges){
+    // 	consumerObj['PoCLossCharges'].push(req.body.PoCLossCharges);
+    // }
+    if (req.consumer.consumerWallet) {
+      consumerObj["consumerWallet"].push(req.body.consumerWallet);
+    }
+    await Gateway.submitTransaction(req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,"UpdateData", JSON.stringify(consumerObj));
+    res.status(201).json({
+      success: true,
+      updatedConsumer: consumerObj,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+exports.updateDaily = async (req, res, next) => {
+	try {
+	  var consumerObj = req.consumer;
+	  // if(req.consumer.PoCLossCharges){
+	  // 	consumerObj['PoCLossCharges'].push(req.body.PoCLossCharges);
+	  // }
+	  if (req.consumer.consumerWallet) {
+		consumerObj["consumerWallet"].push(req.body.consumerWallet);
+	  }
+	  await Gateway.submitTransaction(req.params.org,
+		req.params.appUserId,
+		req.params.channelName,
+		req.params.chaincodeName,"UpdateData", JSON.stringify(consumerObj));
+	  res.status(201).json({
+		success: true,
+		updatedConsumer: consumerObj,
+	  });
 	} catch (error) {
-		next(error)
+	  next(error);
 	}
-}
+  };
+
+exports.updateMonthly = async (req, res, next) => {
+	try {
+	  var consumerObj = req.consumer;
+	  // if(req.consumer.PoCLossCharges){
+	  // 	consumerObj['PoCLossCharges'].push(req.body.PoCLossCharges);
+	  // }
+	  if (req.consumer.consumerWallet) {
+		consumerObj["consumerWallet"].push(req.body.consumerWallet);
+	  }
+	  await Gateway.submitTransaction(req.params.org,
+		req.params.appUserId,
+		req.params.channelName,
+		req.params.chaincodeName,"UpdateData", JSON.stringify(consumerObj));
+	  res.status(201).json({
+		success: true,
+		updatedConsumer: consumerObj,
+	  });
+	} catch (error) {
+	  next(error);
+	}
+  };
+exports.deleteConsumer = async (req, res, next) => {
+  try {
+    // put req.body into  update function and send back to client
+    await Gateway.deleteTransaction("DeleteAsset", req.consumer.id);
+    res.json({
+      msg: "Item Deleted",
+    });
+  } catch (error) {
+    next(error);
+  }
+};

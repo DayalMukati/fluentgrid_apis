@@ -12,10 +12,10 @@ const router = require('express').Router()
 router.param('name', getRldcbyName);
 router.param('rldcId', getRldcById)
 //standard get & post
-router.post('/', postRldc)
-router.get('/', getAllRldcs)
-router.get('/:name', getRldcbyName)
-router.put('/:rldcId', updateRldc)
+router.post('/:appUserId/:org/:channelName/:chaincodeName', postRldc)
+router.get('/:appUserId/:org/:channelName/:chaincodeName', getAllRldcs)
+router.get('/:name/:appUserId/:org/:channelName/:chaincodeName', getRldcbyName)
+router.put('/:rldcId/:appUserId/:org/:channelName/:chaincodeName', updateRldc)
 router.delete('/:rldcId', deleteRldc),
 
 
