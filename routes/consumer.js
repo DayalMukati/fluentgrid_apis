@@ -4,9 +4,9 @@ const {
 	postConsumer,
 	deleteConsumer,
 	updateConsumer,
-	updateDaily,
 	updateMonthly,
-    getConsumerbyName
+    getConsumerbyName,
+	updateWallet
 } = require('../controller/consumer.js')
 
 const router = require('express').Router()
@@ -19,7 +19,7 @@ router.get('/:appUserId/:org/:channelName/:chaincodeName', getAllConsumers)
 router.get('/:accountNo/:appUserId/:org/:channelName/:chaincodeName', getConsumerbyName)
 router.put('/:accountNo/:appUserId/:org/:channelName/:chaincodeName', updateConsumer)
 router.put('/monthly/:accountNo/:appuserId/:org/:channelName/:chaincodeName', updateMonthly)
-router.put('/daily/:accountNo/:appuserId/:org/:channelName/:chaincodeName', updateDaily)
+router.put('/wallet/:accountNo/:appuserId/:org/:channelName/:chaincodeName', updateWallet)
 router.delete('/:accountNo', deleteConsumer),
 
 

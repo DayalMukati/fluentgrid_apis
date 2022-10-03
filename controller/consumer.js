@@ -76,7 +76,7 @@ exports.postConsumer = async (req, res, next) => {
       req.params.chaincodeName,
       "Find",
       JSON.stringify({
-        Name: req.body.Name,
+        AccountNumber: req.body.AccountNumber,
       }),
       "consumer"
     );
@@ -112,12 +112,24 @@ exports.postConsumer = async (req, res, next) => {
 };
 exports.updateConsumer = async (req, res, next) => {
   try {
-    var consumerObj = req.consumer;
+   
     // if(req.consumer.PoCLossCharges){
     // 	consumerObj['PoCLossCharges'].push(req.body.PoCLossCharges);
     // }
-    if (req.consumer.consumerWallet) {
-      consumerObj["consumerWallet"].push(req.body.consumerWallet);
+    const consumerData = await Gateway.evaluateTransaction(req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        AccountNumber: req.params.accountNo,
+      }),
+      "consumer"
+    );
+    const consumer = consumerData[0];
+    var consumerObj = {
+      ...consumer,
+      ...req.body
     }
     await Gateway.submitTransaction(req.params.org,
       req.params.appUserId,
@@ -131,23 +143,31 @@ exports.updateConsumer = async (req, res, next) => {
     next(error);
   }
 };
-exports.updateDaily = async (req, res, next) => {
+exports.updateWallet = async (req, res, next) => {
 	try {
-	  var consumerObj = req.consumer;
-	  // if(req.consumer.PoCLossCharges){
-	  // 	consumerObj['PoCLossCharges'].push(req.body.PoCLossCharges);
-	  // }
-	  if (req.consumer.consumerWallet) {
-		consumerObj["consumerWallet"].push(req.body.consumerWallet);
-	  }
-	  await Gateway.submitTransaction(req.params.org,
-		req.params.appUserId,
-		req.params.channelName,
-		req.params.chaincodeName,"UpdateData", JSON.stringify(consumerObj));
-	  res.status(201).json({
-		success: true,
-		updatedConsumer: consumerObj,
-	  });
+	  const consumerData = await Gateway.evaluateTransaction(req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        AccountNumber: req.params.accountNo,
+      }),
+      "consumer"
+    );
+    const consumer = consumerData[0];
+    var consumerObj = {
+      ...consumer,
+      ...req.body
+    }
+    await Gateway.submitTransaction(req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,"UpdateData", JSON.stringify(consumerObj));
+    res.status(201).json({
+      success: true,
+      updatedConsumer: consumerObj,
+    });
 	} catch (error) {
 	  next(error);
 	}
