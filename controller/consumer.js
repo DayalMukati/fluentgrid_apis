@@ -9,7 +9,7 @@ exports.getConsumerById = async (req, res, next, accountNo) => {
       req.params.chaincodeName,
       "Find",
       JSON.stringify({
-        AccountNo: accountNo,
+        AccountNumber: accountNo,
       }),
       "consumer"
     );
@@ -20,7 +20,7 @@ exports.getConsumerById = async (req, res, next, accountNo) => {
   }
 };
 
-exports.getConsumerbyName = async (req, res, next, name) => {
+exports.getConsumerbyName = async (req, res, next, accountNo) => {
   try {
     console.log(req.params)
     const consumer = await Gateway.evaluateTransaction(
@@ -30,7 +30,7 @@ exports.getConsumerbyName = async (req, res, next, name) => {
       req.params.chaincodeName,
       "Find",
       JSON.stringify({
-        Name: name,
+        AccountNumber: accountNo,
       }),
       "consumer"
     );
