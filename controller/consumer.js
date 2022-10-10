@@ -179,8 +179,8 @@ exports.updateMonthly = async (req, res, next) => {
 	  // if(req.consumer.PoCLossCharges){
 	  // 	consumerObj['PoCLossCharges'].push(req.body.PoCLossCharges);
 	  // }
-	  if (req.consumer.consumerWallet) {
-		consumerObj["consumerWallet"].push(req.body.consumerWallet);
+	  if (req.consumer.ConsumerPackDetails) {
+		consumerObj["ConsumerPackDetails"].push(req.body.ConsumerPackDetails);
 	  }
 	  await Gateway.submitTransaction(req.params.org,
 		req.params.appUserId,
@@ -194,6 +194,30 @@ exports.updateMonthly = async (req, res, next) => {
 	  next(error);
 	}
   };
+
+exports.updatePack = async (req, res, next) => {
+    try {
+      var consumerObj = req.consumer;
+      // if(req.consumer.PoCLossCharges){
+      // 	consumerObj['PoCLossCharges'].push(req.body.PoCLossCharges);
+      // }
+      if (req.consumer.consumerWallet) {
+      consumerObj["consumerWallet"].push(req.body.consumerWallet);
+      }
+      await Gateway.submitTransaction(req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,"UpdateData", JSON.stringify(consumerObj));
+      res.status(201).json({
+      success: true,
+      updatedConsumer: consumerObj,
+      });
+    } catch (error) {
+      next(error);
+    }
+    };
+
+
 exports.deleteConsumer = async (req, res, next) => {
   try {
     // put req.body into  update function and send back to client
