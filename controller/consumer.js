@@ -197,13 +197,19 @@ exports.updateMonthly = async (req, res, next) => {
 
 exports.updatePack = async (req, res, next) => {
     try {
-      var consumerObj = req.consumer;
-      // if(req.consumer.PoCLossCharges){
-      // 	consumerObj['PoCLossCharges'].push(req.body.PoCLossCharges);
-      // }
-      if (req.consumer.consumerWallet) {
-      consumerObj["consumerWallet"].push(req.body.consumerWallet);
-      }
+      const consumerData = await Gateway.evaluateTransaction(req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "Find",
+        JSON.stringify({
+          AccountNumber: req.params.accountNo,
+        }),
+        "consumer"
+      );
+      var consumerObj = consumerData[0];
+      
+      consumerObj["ConsumerPackDetails"].push(req.body.ConsumerPackDetails);
       await Gateway.submitTransaction(req.params.org,
       req.params.appUserId,
       req.params.channelName,
