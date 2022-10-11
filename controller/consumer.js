@@ -223,6 +223,73 @@ exports.updatePack = async (req, res, next) => {
     }
     };
 
+exports.changePack = async (req, res, next) => {
+      try {
+        const consumerData = await Gateway.evaluateTransaction(req.params.org,
+          req.params.appUserId,
+          req.params.channelName,
+          req.params.chaincodeName,
+          "Find",
+          JSON.stringify({
+            AccountNumber: req.params.accountNo,
+          }),
+          "consumer"
+        );
+        var consumerObj = consumerData[0];
+        const arr = consumerObj.ConsumerPackDetails;
+        await removeById(arr, req.params.packName);
+        consumerObj["ConsumerPackDetails"].push(req.body.ConsumerPackDetails);
+        await Gateway.submitTransaction(req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,"UpdateData", JSON.stringify(consumerObj));
+        res.status(201).json({
+        success: true,
+        updatedConsumer: consumerObj,
+        });
+      } catch (error) {
+        next(error);
+      }
+      };
+
+      exports.removePack = async (req, res, next) => {
+        try {
+          const consumerData = await Gateway.evaluateTransaction(req.params.org,
+            req.params.appUserId,
+            req.params.channelName,
+            req.params.chaincodeName,
+            "Find",
+            JSON.stringify({
+              AccountNumber: req.params.accountNo,
+            }),
+            "consumer"
+          );
+          var consumerObj = consumerData[0];
+          const arr = consumerObj.ConsumerPackDetails;
+          await removeById(arr, req.params.packName);
+          await Gateway.submitTransaction(req.params.org,
+          req.params.appUserId,
+          req.params.channelName,
+          req.params.chaincodeName,"UpdateData", JSON.stringify(consumerObj));
+          res.status(201).json({
+          success: true,
+          updatedConsumer: consumerObj,
+          });
+        } catch (error) {
+          next(error);
+        }
+        };
+       
+async function removeById(arr, PackName){
+  const requiredIndex = arr.findIndex(el => {
+     return el.PackName === String(PackName);
+  });
+  if(requiredIndex === -1){
+     return false;
+  };
+  return !!arr.splice(requiredIndex, 1);
+};
+
 
 exports.deleteConsumer = async (req, res, next) => {
   try {
