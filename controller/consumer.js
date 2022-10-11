@@ -302,20 +302,23 @@ exports.dailyBill = async (req, res, next) => {
   }
 };
 
-exports.getBill = async (req, res, next, accountNo) => {
+exports.getBill = async (req, res, next) => {
   try {
-    console.log(req.body);
+    console.log(req.body, "req.body");
+    let obj = req.body;
+    for (var propName in obj) {
+      if (obj[propName] === null || obj[propName] === "") {
+        delete obj[propName];
+      }
+    }
+    console.log(obj, "req.body");
     const bill = await Gateway.evaluateTransaction(
       req.params.org,
       req.params.appUserId,
       req.params.channelName,
       req.params.chaincodeName,
       "Find",
-      JSON.stringify({
-        AccountNumber: accountNo,
-        MeterNo: req.body.MeterNo || "",
-        BillingDate: req.body.BillingDate || ""
-      }),
+      JSON.stringify(obj),
       "dailybill"
     );
     if (!bill) {
@@ -333,6 +336,181 @@ exports.getBill = async (req, res, next, accountNo) => {
     next(error);
   }
 };
+
+exports.createRecharge = async (req, res, next) => {
+  try {
+    req.body.id = new ObjectID().toHexString();
+    const id = req.body.id;
+    req.body.docType = "recharge";
+    const consumerData = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        AccountNumber: req.params.accountNo,
+      }),
+      "consumer"
+    );
+    if (consumerData[0]) {
+      await Gateway.submitTransaction(
+        req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "CreateData",
+        JSON.stringify(req.body)
+      );
+      const savedRecharge = await Gateway.evaluateTransaction(
+        req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "Find",
+        JSON.stringify({
+          id: id,
+        }),
+        "recharge"
+      );
+
+      res.status(201).json({
+        success: true,
+        savedRecharge: savedRecharge[0],
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        meg: "Record Not Found",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getRecharge = async (req, res, next) => {
+  try {
+    console.log(req.body, "req.body");
+    let obj = req.body;
+    for (var propName in obj) {
+      if (obj[propName] === null || obj[propName] === "") {
+        delete obj[propName];
+      }
+    }
+    console.log(obj, "req.body");
+    const recharge = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify(obj),
+      "recharge"
+    );
+    if (!recharge) {
+      res.status(400).json({
+        success: false,
+        msg: "No Record Found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        recharge: recharge,
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.createAdjust = async (req, res, next) => {
+  try {
+    req.body.id = new ObjectID().toHexString();
+    const id = req.body.id;
+    req.body.docType = "adjustment";
+    const consumerData = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        AccountNumber: req.params.accountNo,
+      }),
+      "consumer"
+    );
+    if (consumerData[0]) {
+      await Gateway.submitTransaction(
+        req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "CreateData",
+        JSON.stringify(req.body)
+      );
+      const savedAdjust = await Gateway.evaluateTransaction(
+        req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "Find",
+        JSON.stringify({
+          id: id,
+        }),
+        "adjustment"
+      );
+
+      res.status(201).json({
+        success: true,
+        savedAdjust: savedAdjust[0],
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        meg: "Record Not Found",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAdjust = async (req, res, next) => {
+  try {
+    console.log(req.body, "req.body");
+    let obj = req.body;
+    for (var propName in obj) {
+      if (obj[propName] === null || obj[propName] === "") {
+        delete obj[propName];
+      }
+    }
+    console.log(obj, "req.body");
+    const adjustment = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify(obj),
+      "adjustment"
+    );
+    if (!adjustment) {
+      res.status(400).json({
+        success: false,
+        msg: "No Record Found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        adjustment: adjustment,
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.deleteConsumer = async (req, res, next) => {
   try {
     // put req.body into  update function and send back to client
