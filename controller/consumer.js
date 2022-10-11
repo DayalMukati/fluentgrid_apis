@@ -3,7 +3,8 @@ const Gateway = require("../utils/gateway");
 
 exports.getConsumerById = async (req, res, next, accountNo) => {
   try {
-    const consumer = await Gateway.evaluateTransaction(req.params.org,
+    const consumer = await Gateway.evaluateTransaction(
+      req.params.org,
       req.params.appUserId,
       req.params.channelName,
       req.params.chaincodeName,
@@ -22,7 +23,7 @@ exports.getConsumerById = async (req, res, next, accountNo) => {
 
 exports.getConsumerbyName = async (req, res, next, accountNo) => {
   try {
-    console.log(req.params)
+    console.log(req.params);
     const consumer = await Gateway.evaluateTransaction(
       req.params.org,
       req.params.appUserId,
@@ -51,11 +52,14 @@ exports.getConsumerbyName = async (req, res, next, accountNo) => {
 };
 exports.getAllConsumers = async (req, res, next) => {
   try {
-    const consumers = await Gateway.evaluateTransaction(req.params.org,
+    const consumers = await Gateway.evaluateTransaction(
+      req.params.org,
       req.params.appUserId,
       req.params.channelName,
       req.params.chaincodeName,
-      "GetAll", "consumer");
+      "GetAll",
+      "consumer"
+    );
     res.json({
       success: true,
       data: consumers,
@@ -81,12 +85,16 @@ exports.postConsumer = async (req, res, next) => {
       "consumer"
     );
     if (!duplicateConsumer[0]) {
-      await Gateway.submitTransaction(req.params.org,
+      await Gateway.submitTransaction(
+        req.params.org,
         req.params.appUserId,
         req.params.channelName,
         req.params.chaincodeName,
-        "CreateData", JSON.stringify(req.body));
-      const savedConsumer = await Gateway.evaluateTransaction(req.params.org,
+        "CreateData",
+        JSON.stringify(req.body)
+      );
+      const savedConsumer = await Gateway.evaluateTransaction(
+        req.params.org,
         req.params.appUserId,
         req.params.channelName,
         req.params.chaincodeName,
@@ -94,7 +102,8 @@ exports.postConsumer = async (req, res, next) => {
         JSON.stringify({
           id: id,
         }),
-        "consumer");
+        "consumer"
+      );
 
       res.status(201).json({
         success: true,
@@ -112,11 +121,11 @@ exports.postConsumer = async (req, res, next) => {
 };
 exports.updateConsumer = async (req, res, next) => {
   try {
-   
     // if(req.consumer.PoCLossCharges){
     // 	consumerObj['PoCLossCharges'].push(req.body.PoCLossCharges);
     // }
-    const consumerData = await Gateway.evaluateTransaction(req.params.org,
+    const consumerData = await Gateway.evaluateTransaction(
+      req.params.org,
       req.params.appUserId,
       req.params.channelName,
       req.params.chaincodeName,
@@ -129,12 +138,16 @@ exports.updateConsumer = async (req, res, next) => {
     const consumer = consumerData[0];
     var consumerObj = {
       ...consumer,
-      ...req.body
-    }
-    await Gateway.submitTransaction(req.params.org,
+      ...req.body,
+    };
+    await Gateway.submitTransaction(
+      req.params.org,
       req.params.appUserId,
       req.params.channelName,
-      req.params.chaincodeName,"UpdateData", JSON.stringify(consumerObj));
+      req.params.chaincodeName,
+      "UpdateData",
+      JSON.stringify(consumerObj)
+    );
     res.status(201).json({
       success: true,
       updatedConsumer: consumerObj,
@@ -144,8 +157,9 @@ exports.updateConsumer = async (req, res, next) => {
   }
 };
 exports.updateWallet = async (req, res, next) => {
-	try {
-	  const consumerData = await Gateway.evaluateTransaction(req.params.org,
+  try {
+    const consumerData = await Gateway.evaluateTransaction(
+      req.params.org,
       req.params.appUserId,
       req.params.channelName,
       req.params.chaincodeName,
@@ -158,76 +172,178 @@ exports.updateWallet = async (req, res, next) => {
     const consumer = consumerData[0];
     var consumerObj = {
       ...consumer,
-      ...req.body
-    }
-    await Gateway.submitTransaction(req.params.org,
+      ...req.body,
+    };
+    await Gateway.submitTransaction(
+      req.params.org,
       req.params.appUserId,
       req.params.channelName,
-      req.params.chaincodeName,"UpdateData", JSON.stringify(consumerObj));
+      req.params.chaincodeName,
+      "UpdateData",
+      JSON.stringify(consumerObj)
+    );
     res.status(201).json({
       success: true,
       updatedConsumer: consumerObj,
     });
-	} catch (error) {
-	  next(error);
-	}
-  };
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.updateMonthly = async (req, res, next) => {
-	try {
-	  var consumerObj = req.consumer;
-	  // if(req.consumer.PoCLossCharges){
-	  // 	consumerObj['PoCLossCharges'].push(req.body.PoCLossCharges);
-	  // }
-	  if (req.consumer.ConsumerPackDetails) {
-		consumerObj["ConsumerPackDetails"].push(req.body.ConsumerPackDetails);
-	  }
-	  await Gateway.submitTransaction(req.params.org,
-		req.params.appUserId,
-		req.params.channelName,
-		req.params.chaincodeName,"UpdateData", JSON.stringify(consumerObj));
-	  res.status(201).json({
-		success: true,
-		updatedConsumer: consumerObj,
-	  });
-	} catch (error) {
-	  next(error);
-	}
-  };
+  try {
+    var consumerObj = req.consumer;
+    // if(req.consumer.PoCLossCharges){
+    // 	consumerObj['PoCLossCharges'].push(req.body.PoCLossCharges);
+    // }
+    if (req.consumer.ConsumerPackDetails) {
+      consumerObj["ConsumerPackDetails"].push(req.body.ConsumerPackDetails);
+    }
+    await Gateway.submitTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "UpdateData",
+      JSON.stringify(consumerObj)
+    );
+    res.status(201).json({
+      success: true,
+      updatedConsumer: consumerObj,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.updatePack = async (req, res, next) => {
-    try {
-      const consumerData = await Gateway.evaluateTransaction(req.params.org,
+  try {
+    const consumerData = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        AccountNumber: req.params.accountNo,
+      }),
+      "consumer"
+    );
+    var consumerObj = consumerData[0];
+
+    consumerObj["ConsumerPackDetails"].push(req.body.ConsumerPackDetails);
+    await Gateway.submitTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "UpdateData",
+      JSON.stringify(consumerObj)
+    );
+    res.status(201).json({
+      success: true,
+      updatedConsumer: consumerObj,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.dailyBill = async (req, res, next) => {
+  try {
+    req.body.id = new ObjectID().toHexString();
+    const id = req.body.id;
+    req.body.docType = "dailybill";
+    const consumerData = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        AccountNumber: req.params.accountNo,
+      }),
+      "consumer"
+    );
+    if (consumerData[0]) {
+      await Gateway.submitTransaction(
+        req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "CreateData",
+        JSON.stringify(req.body)
+      );
+      const savedBill = await Gateway.evaluateTransaction(
+        req.params.org,
         req.params.appUserId,
         req.params.channelName,
         req.params.chaincodeName,
         "Find",
         JSON.stringify({
-          AccountNumber: req.params.accountNo,
+          id: id,
         }),
-        "consumer"
+        "dailybill"
       );
-      var consumerObj = consumerData[0];
-      
-      consumerObj["ConsumerPackDetails"].push(req.body.ConsumerPackDetails);
-      await Gateway.submitTransaction(req.params.org,
+
+      res.status(201).json({
+        success: true,
+        savedBill: savedBill[0],
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        meg: "Record Not Found",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getBill = async (req, res, next, accountNo) => {
+  try {
+    console.log(req.body);
+    const bill = await Gateway.evaluateTransaction(
+      req.params.org,
       req.params.appUserId,
       req.params.channelName,
-      req.params.chaincodeName,"UpdateData", JSON.stringify(consumerObj));
-      res.status(201).json({
-      success: true,
-      updatedConsumer: consumerObj,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        AccountNumber: accountNo,
+        MeterNo: req.body.MeterNo || "",
+        BillingDate: req.body.BillingDate || ""
+      }),
+      "dailybill"
+    );
+    if (!bill) {
+      res.status(400).json({
+        success: false,
+        msg: "No Record Found",
       });
-    } catch (error) {
-      next(error);
+    } else {
+      res.status(200).json({
+        success: true,
+        bills: bill,
+      });
     }
-    };
-
-
+  } catch (error) {
+    next(error);
+  }
+};
 exports.deleteConsumer = async (req, res, next) => {
   try {
     // put req.body into  update function and send back to client
-    await Gateway.deleteTransaction("DeleteAsset", req.consumer.id);
+    await Gateway.deleteTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "DeleteAsset",
+      req.params.accountNo
+    );
     res.json({
       msg: "Item Deleted",
     });
