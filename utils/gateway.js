@@ -76,10 +76,13 @@ exports.submitTransaction = async (org, appUserId, channelName,
 	}
 };
 
-exports.deleteTransaction = async (transactionName, ...args) => {
+exports.deleteTransaction = async (org, appUserId, channelName,
+	chaincodeName, transactionName, ...args) => {
 	// Get the contract from the network.network.
 	//const [contract, gateway] = await getContract();
 	try {
+		await connectToFabric(org, appUserId, channelName,
+			chaincodeName)
 		logger.info(`\n--> Delete Transaction: ${transactionName} with args ${args}`)
 		console.log(
 			`\n--> Submit Transaction: ${transactionName} with args ${args}`
