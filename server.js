@@ -16,6 +16,7 @@ const rldcRoutes = require('./routes/rldc');
 const sldcRoutes = require('./routes/sldc');
 const stuRoutes = require('./routes/stu');
 const adminRoutes = require('./routes/admin');
+const commonRoutes = require('./routes/common')
 
 //connectToFabric();
 
@@ -53,6 +54,7 @@ app.use('/api/rldc', rldcRoutes);
 app.use('/api/sldc', sldcRoutes);
 app.use('/api/stu', stuRoutes);
 app.use('/api/auth', adminRoutes);
+app.use('/api/common', commonRoutes);
 
 
 //error middleware
