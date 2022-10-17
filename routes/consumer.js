@@ -13,7 +13,11 @@ const {
 	createRecharge,
 	getRecharge,
 	createAdjust,
-	getAdjust
+	getAdjust,
+	postCharges,
+	getCharges,
+	postMeter,
+	getMeter
 } = require('../controller/consumer.js')
 
 const router = require('express').Router()
@@ -35,6 +39,12 @@ router.put('/pack/:accountNo/:appUserId/:org/:channelName/:chaincodeName', updat
 router.put('/monthly/:accountNo/:appuserId/:org/:channelName/:chaincodeName', updateMonthly)
 router.put('/wallet/:accountNo/:appuserId/:org/:channelName/:chaincodeName', updateWallet)
 router.delete('/:accountNo/:appuserId/:org/:channelName/:chaincodeName', deleteConsumer),
+
+router.post('/charges/:type/:appUserId/:org/:channelName/:chaincodeName', postCharges)
+router.get('/charges/:type/:appUserId/:org/:channelName/:chaincodeName', getCharges)
+
+router.post('/meter/:appUserId/:org/:channelName/:chaincodeName', postMeter)
+router.get('/meter/:appUserId/:org/:channelName/:chaincodeName', getMeter)
 
 
 module.exports = router

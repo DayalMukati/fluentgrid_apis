@@ -139,6 +139,142 @@ exports.updateGenco = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.postLosses = async (req, res, next) => {
+  try {
+    req.body.id = new ObjectID().toHexString();
+    const id = req.body.id;
+    req.body.docType = "lossesconf";
+      await Gateway.submitTransaction(
+        req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "CreateData",
+        JSON.stringify(req.body)
+      );
+      const savedLossesConf = await Gateway.evaluateTransaction(
+        req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "Find",
+        JSON.stringify({
+          id: id,
+        }),
+        "lossesconf"
+      );
+      res.status(201).json({
+        success: true,
+        savedLossesConf: savedLossesConf[0],
+      });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getLosses = async (req, res, next) => {
+  try {
+    console.log(req.body, "req.body");
+    let obj = req.body;
+    for (var propName in obj) {
+      if (obj[propName] === null || obj[propName] === "") {
+        delete obj[propName];
+      }
+    }
+    console.log(obj, "req.body");
+    const losses = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify(obj),
+      "lossesconf"
+    );
+    if (!losses) {
+      res.status(400).json({
+        success: false,
+        msg: "No Record Found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        losses: losses,
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.postOutage = async (req, res, next) => {
+  try {
+    req.body.id = new ObjectID().toHexString();
+    const id = req.body.id;
+    req.body.docType = "gencooutage";
+      await Gateway.submitTransaction(
+        req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "CreateData",
+        JSON.stringify(req.body)
+      );
+      const savedOutage = await Gateway.evaluateTransaction(
+        req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "Find",
+        JSON.stringify({
+          id: id,
+        }),
+        "gencooutage"
+      );
+      res.status(201).json({
+        success: true,
+        savedOutage: savedOutage[0],
+      });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getOutage = async (req, res, next) => {
+  try {
+    console.log(req.body, "req.body");
+    let obj = req.body;
+    for (var propName in obj) {
+      if (obj[propName] === null || obj[propName] === "") {
+        delete obj[propName];
+      }
+    }
+    console.log(obj, "req.body");
+    const outages = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify(obj),
+      "gencooutage"
+    );
+    if (!outages) {
+      res.status(400).json({
+        success: false,
+        msg: "No Record Found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        outages: outages,
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 exports.deleteGenco = async (req, res, next) => {
   try {
     // put req.body into  update function and send back to client

@@ -511,6 +511,160 @@ exports.getAdjust = async (req, res, next) => {
   }
 };
 
+exports.postCharges = async (req, res, next) => {
+  try {
+    req.body.id = new ObjectID().toHexString();
+    const id = req.body.id;
+    req.body.docType = req.params.type + "charges";
+    const consumerData = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        AccountNumber: req.params.accountNo,
+      }),
+      "consumer"
+    );
+    if (consumerData[0]) {
+      await Gateway.submitTransaction(
+        req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "CreateData",
+        JSON.stringify(req.body)
+      );
+      const savedCharges = await Gateway.evaluateTransaction(
+        req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "Find",
+        JSON.stringify({
+          id: id,
+        }),
+        req.body.docType
+      );
+
+      res.status(201).json({
+        success: true,
+        savedCharges: savedCharges[0],
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        meg: "Record Not Found",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getCharges = async (req, res, next) => {
+  try {
+    let obj = req.body;
+    for (var propName in obj) {
+      if (obj[propName] === null || obj[propName] === "") {
+        delete obj[propName];
+      }
+    }
+    console.log(obj, "req.body");
+    const charge = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify(obj),
+      req.params.type + "charges"
+    );
+    if (!charge) {
+      res.status(400).json({
+        success: false,
+        msg: "No Record Found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        charges: charge,
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.postMeter = async (req, res, next) => {
+  try {
+    req.body.id = new ObjectID().toHexString();
+    const id = req.body.id;
+    req.body.docType = "meterrent";
+      await Gateway.submitTransaction(
+        req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "CreateData",
+        JSON.stringify(req.body)
+      );
+      const savedMeterRent = await Gateway.evaluateTransaction(
+        req.params.org,
+        req.params.appUserId,
+        req.params.channelName,
+        req.params.chaincodeName,
+        "Find",
+        JSON.stringify({
+          id: id,
+        }),
+        "meterrent"
+      );
+      res.status(201).json({
+        success: true,
+        savedMeterRent: savedMeterRent[0],
+      });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getMeter = async (req, res, next) => {
+  try {
+    console.log(req.body, "req.body");
+    let obj = req.body;
+    for (var propName in obj) {
+      if (obj[propName] === null || obj[propName] === "") {
+        delete obj[propName];
+      }
+    }
+    console.log(obj, "req.body");
+    const meter = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify(obj),
+      "meterrent"
+    );
+    if (!meter) {
+      res.status(400).json({
+        success: false,
+        msg: "No Record Found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        meterrents: meter,
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.deleteConsumer = async (req, res, next) => {
   try {
     // put req.body into  update function and send back to client
