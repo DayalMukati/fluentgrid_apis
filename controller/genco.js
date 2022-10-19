@@ -175,10 +175,12 @@ exports.postLosses = async (req, res, next) => {
 
 exports.getLosses = async (req, res, next) => {
   try {
+    let startDate = req.body.FROM_DATE;
+    let endDate = req.body.TO_DATE;
     console.log(req.body, "req.body");
     let obj = req.body;
     for (var propName in obj) {
-      if (obj[propName] === null || obj[propName] === "") {
+      if (obj[propName] === null || obj[propName] === "" || obj[propName] === req.body.FROM_DATE || obj[propName] === req.body.TO_DATE) {
         delete obj[propName];
       }
     }
@@ -198,9 +200,12 @@ exports.getLosses = async (req, res, next) => {
         msg: "No Record Found",
       });
     } else {
+      var resultLossesData = losses.filter(function (a) {
+        return a.FROM_DATE >= startDate && a.TO_DATE <= endDate;
+      });
       res.status(200).json({
         success: true,
-        losses: losses,
+        losses: resultLossesData,
       });
     }
   } catch (error) {
@@ -208,7 +213,7 @@ exports.getLosses = async (req, res, next) => {
   }
 };
 
-exports.postOutage = async (req, res, next) => {
+exports.postgencoOutage = async (req, res, next) => {
   try {
     req.body.id = new ObjectID().toHexString();
     const id = req.body.id;
@@ -241,12 +246,14 @@ exports.postOutage = async (req, res, next) => {
   }
 };
 
-exports.getOutage = async (req, res, next) => {
+exports.getgencoOutage = async (req, res, next) => {
   try {
+    let startDate = req.body.FROM_DATE;
+    let endDate = req.body.TO_DATE;
     console.log(req.body, "req.body");
     let obj = req.body;
     for (var propName in obj) {
-      if (obj[propName] === null || obj[propName] === "") {
+      if (obj[propName] === null || obj[propName] === "" || obj[propName] === req.body.FROM_DATE || obj[propName] === req.body.TO_DATE) {
         delete obj[propName];
       }
     }
@@ -266,9 +273,12 @@ exports.getOutage = async (req, res, next) => {
         msg: "No Record Found",
       });
     } else {
+      var resultOutageData = outages.filter(function (a) {
+        return a.FROM_DATE >= startDate && a.TO_DATE <= endDate;
+      });
       res.status(200).json({
         success: true,
-        outages: outages,
+        outages: resultOutageData,
       });
     }
   } catch (error) {

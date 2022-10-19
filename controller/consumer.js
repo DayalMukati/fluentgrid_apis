@@ -304,21 +304,20 @@ exports.dailyBill = async (req, res, next) => {
 
 exports.getBill = async (req, res, next) => {
   try {
-    console.log(req.body, "req.body");
-    let obj = req.body;
-    for (var propName in obj) {
-      if (obj[propName] === null || obj[propName] === "") {
-        delete obj[propName];
-      }
-    }
-    console.log(obj, "req.body");
+    // let obj = req.body;
+    // for (var propName in obj) {
+    //   if (obj[propName] === null || obj[propName] === "") {
+    //     delete obj[propName];
+    //   }
+    // }
+
     const bill = await Gateway.evaluateTransaction(
       req.params.org,
       req.params.appUserId,
       req.params.channelName,
       req.params.chaincodeName,
       "Find",
-      JSON.stringify(obj),
+      JSON.stringify({ MeterNo: req.body.MeterNo }),
       "dailybill"
     );
     if (!bill) {
@@ -327,9 +326,16 @@ exports.getBill = async (req, res, next) => {
         msg: "No Record Found",
       });
     } else {
+      var startDate = req.body.startDate;
+      var endDate = req.body.endDate;
+
+      var resultBillData = bill.filter(function (a) {
+        return a.BillingDate >= startDate && a.BillingDate <= endDate;
+      });
+
       res.status(200).json({
         success: true,
-        bills: bill,
+        bills: resultBillData,
       });
     }
   } catch (error) {
@@ -565,9 +571,10 @@ exports.postCharges = async (req, res, next) => {
 
 exports.getCharges = async (req, res, next) => {
   try {
+    let startDate = req.body.EFFECTIVE_DATE;
     let obj = req.body;
     for (var propName in obj) {
-      if (obj[propName] === null || obj[propName] === "") {
+      if (obj[propName] === null || obj[propName] === "" || obj[propName] === req.body.EFFECTIVE_DATE) {
         delete obj[propName];
       }
     }
@@ -587,9 +594,13 @@ exports.getCharges = async (req, res, next) => {
         msg: "No Record Found",
       });
     } else {
+      console.log(startDate)
+      var resultChargeData = charge.filter(function (a) {
+        return a.EFFECTIVE_DATE >= startDate;
+      });
       res.status(200).json({
         success: true,
-        charges: charge,
+        charges: resultChargeData,
       });
     }
   } catch (error) {
@@ -602,29 +613,29 @@ exports.postMeter = async (req, res, next) => {
     req.body.id = new ObjectID().toHexString();
     const id = req.body.id;
     req.body.docType = "meterrent";
-      await Gateway.submitTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
-        "CreateData",
-        JSON.stringify(req.body)
-      );
-      const savedMeterRent = await Gateway.evaluateTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
-        "Find",
-        JSON.stringify({
-          id: id,
-        }),
-        "meterrent"
-      );
-      res.status(201).json({
-        success: true,
-        savedMeterRent: savedMeterRent[0],
-      });
+    await Gateway.submitTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "CreateData",
+      JSON.stringify(req.body)
+    );
+    const savedMeterRent = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        id: id,
+      }),
+      "meterrent"
+    );
+    res.status(201).json({
+      success: true,
+      savedMeterRent: savedMeterRent[0],
+    });
   } catch (error) {
     next(error);
   }

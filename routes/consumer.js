@@ -40,7 +40,7 @@ router.put('/monthly/:accountNo/:appuserId/:org/:channelName/:chaincodeName', up
 router.put('/wallet/:accountNo/:appuserId/:org/:channelName/:chaincodeName', updateWallet)
 router.delete('/:accountNo/:appuserId/:org/:channelName/:chaincodeName', deleteConsumer),
 
-router.post('/charges/:type/:appUserId/:org/:channelName/:chaincodeName', postCharges)
+router.post('/charges/:type/:accountNo/:appUserId/:org/:channelName/:chaincodeName', postCharges)
 router.get('/charges/:type/:appUserId/:org/:channelName/:chaincodeName', getCharges)
 
 router.post('/meter/:appUserId/:org/:channelName/:chaincodeName', postMeter)
