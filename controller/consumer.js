@@ -50,6 +50,36 @@ exports.getConsumerbyName = async (req, res, next, accountNo) => {
     next(error);
   }
 };
+
+exports.getConsumerbyDate = async (req, res, next, accountNo) => {
+  try {
+    console.log(req.params);
+    const consumer = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        AccountNumber: accountNo,
+      }),
+      "consumer"
+    );
+    if (!consumer[0]) {
+      res.status(400).json({
+        success: false,
+        msg: "No Record Found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        consumer: consumer[0],
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
 exports.getAllConsumers = async (req, res, next) => {
   try {
     const consumers = await Gateway.evaluateTransaction(
@@ -72,6 +102,7 @@ exports.postConsumer = async (req, res, next) => {
   try {
     req.body.id = new ObjectID().toHexString();
     req.body.docType = "consumer";
+    req.body.createdOn = new Date().toLocaleDateString('en-GB')
     const id = req.body.id;
     const duplicateConsumer = await Gateway.evaluateTransaction(
       req.params.org,
@@ -596,7 +627,7 @@ exports.getCharges = async (req, res, next) => {
     } else {
       console.log(startDate)
       var resultChargeData = charge.filter(function (a) {
-        return a.EFFECTIVE_DATE >= startDate;
+        return a.EFFECTIVE_DATE <= startDate;
       });
       res.status(200).json({
         success: true,
@@ -643,10 +674,10 @@ exports.postMeter = async (req, res, next) => {
 
 exports.getMeter = async (req, res, next) => {
   try {
-    console.log(req.body, "req.body");
+    let startDate = req.body.EFFECTIVE_DATE;
     let obj = req.body;
     for (var propName in obj) {
-      if (obj[propName] === null || obj[propName] === "") {
+      if (obj[propName] === null || obj[propName] === "" || obj[propName] === req.body.EFFECTIVE_DATE) {
         delete obj[propName];
       }
     }
@@ -666,9 +697,12 @@ exports.getMeter = async (req, res, next) => {
         msg: "No Record Found",
       });
     } else {
+      var resultMeterData = charge.filter(function (a) {
+        return a.EFFECTIVE_DATE <= startDate;
+      });
       res.status(200).json({
         success: true,
-        meterrents: meter,
+        meterrents: resultMeterData,
       });
     }
   } catch (error) {
