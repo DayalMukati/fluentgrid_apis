@@ -4,7 +4,11 @@ const {
    postOutage,
    getOutage,
    postWallet,
-   getWallet
+   getWallet,
+   postDSM1,
+   getDSM1,
+   getDSM2,
+   postDSM2
 } = require('../controller/common.js')
 
 const router = require('express').Router()
@@ -17,4 +21,10 @@ router.get('/outage/:entity/:appUserId/:org/:channelName/:chaincodeName', getOut
 
 router.post('/wallet/:appUserId/:org/:channelName/:chaincodeName', postWallet)
 router.get('/wallet/:appUserId/:org/:channelName/:chaincodeName', getWallet)
+
+router.post('/dsm1/:appUserId/:org/:channelName/:chaincodeName', postDSM1)
+router.get('/dsm1/:appUserId/:org/:channelName/:chaincodeName', getDSM1)
+
+router.post('/dsm2/:appUserId/:org/:channelName/:chaincodeName', postDSM2)
+router.get('/dsm2/:appUserId/:org/:channelName/:chaincodeName', getDSM2)
 module.exports = router

@@ -180,8 +180,8 @@ exports.postWallet = async (req, res, next) => {
       id: new ObjectID().toHexString(),
       docType: "wallet",
       updatedAt: new Date(),
-      Transactions : []
-    }
+      Transactions: [],
+    };
     const walletData = await Gateway.evaluateTransaction(
       req.params.org,
       req.params.appUserId,
@@ -256,6 +256,146 @@ exports.getWallet = async (req, res, next) => {
       res.status(200).json({
         success: true,
         wallet: wallet,
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.postDSM1 = async (req, res, next) => {
+  try {
+    let data = {
+      ...req.body,
+      id: new ObjectID().toHexString(),
+      docType: "DSM1",
+    };
+    await Gateway.submitTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "CreateData",
+      JSON.stringify(data)
+    );
+    const savedData = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        id: data.id,
+      }),
+      "DSM1"
+    );
+
+    res.status(201).json({
+      success: true,
+      savedWallet: savedData[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.postDSM2 = async (req, res, next) => {
+  try {
+    let data = {
+      ...req.body,
+      id: new ObjectID().toHexString(),
+      docType: "DSM2",
+    };
+    await Gateway.submitTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "CreateData",
+      JSON.stringify(data)
+    );
+    const savedData = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify({
+        id: data.id,
+      }),
+      "DSM2"
+    );
+
+    res.status(201).json({
+      success: true,
+      savedWallet: savedData[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getDSM1 = async (req, res, next) => {
+  try {
+    let obj = req.body;
+    for (var propName in obj) {
+      if (obj[propName] === null || obj[propName] === "") {
+        delete obj[propName];
+      }
+    }
+    console.log(obj, "req.body");
+    const data = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify(obj),
+      "DSM1"
+    );
+    if (!data) {
+      res.status(400).json({
+        success: false,
+        msg: "No Record Found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        data: data,
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getDSM2 = async (req, res, next) => {
+  try {
+    let obj = req.body;
+    for (var propName in obj) {
+      if (obj[propName] === null || obj[propName] === "") {
+        delete obj[propName];
+      }
+    }
+    console.log(obj, "req.body");
+    const data = await Gateway.evaluateTransaction(
+      req.params.org,
+      req.params.appUserId,
+      req.params.channelName,
+      req.params.chaincodeName,
+      "Find",
+      JSON.stringify(obj),
+      "DSM2"
+    );
+    if (!data) {
+      res.status(400).json({
+        success: false,
+        msg: "No Record Found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        data: data,
       });
     }
   } catch (error) {
