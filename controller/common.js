@@ -292,7 +292,7 @@ exports.postDSM1 = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      savedWallet: savedData[0],
+      savedData: savedData[0],
     });
   } catch (error) {
     next(error);
@@ -328,7 +328,7 @@ exports.postDSM2 = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      savedWallet: savedData[0],
+      savedData: savedData[0],
     });
   } catch (error) {
     next(error);
