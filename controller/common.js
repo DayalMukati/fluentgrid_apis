@@ -5,32 +5,32 @@ exports.postLosscharge = async (req, res, next) => {
   try {
     req.body.id = new ObjectID().toHexString();
     const id = req.body.id;
-    req.body.docType = req.params.entity + "losscharge";
+    req.body.docType = req.query.entity + "losscharge";
     const lossData = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         Name: req.body.Name,
       }),
-      req.params.entity
+      req.query.entity
     );
     if (lossData[0]) {
       await Gateway.submitTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+        req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "CreateData",
         JSON.stringify(req.body)
       );
       const savedLoss = await Gateway.evaluateTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+        req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "Find",
         JSON.stringify({
           id: id,
@@ -63,13 +63,13 @@ exports.getLosscharge = async (req, res, next) => {
     }
     console.log(obj, "req.body");
     const loss = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify(obj),
-      req.params.entity + "losscharge"
+      req.query.entity + "losscharge"
     );
     if (!loss) {
       res.status(400).json({
@@ -91,32 +91,32 @@ exports.postOutage = async (req, res, next) => {
   try {
     req.body.id = new ObjectID().toHexString();
     const id = req.body.id;
-    req.body.docType = req.params.entity + "outage";
+    req.body.docType = req.query.entity + "outage";
     const outageData = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         Name: req.body.Name,
       }),
-      req.params.entity
+      req.query.entity
     );
     if (outageData[0]) {
       await Gateway.submitTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+        req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "CreateData",
         JSON.stringify(req.body)
       );
       const savedOutage = await Gateway.evaluateTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+        req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "Find",
         JSON.stringify({
           id: id,
@@ -149,13 +149,13 @@ exports.getOutage = async (req, res, next) => {
     }
     console.log(obj, "req.body");
     const outage = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify(obj),
-      req.params.entity + "outage"
+      req.query.entity + "outage"
     );
     if (!outage) {
       res.status(400).json({
@@ -183,10 +183,10 @@ exports.postWallet = async (req, res, next) => {
       Transactions: [],
     };
     const walletData = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         OrganizationName: req.body.OrganizationName,
@@ -195,18 +195,18 @@ exports.postWallet = async (req, res, next) => {
     );
     if (!walletData[0]) {
       await Gateway.submitTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+        req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "CreateData",
         JSON.stringify(wallet)
       );
       const savedWallet = await Gateway.evaluateTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+        req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "Find",
         JSON.stringify({
           id: wallet.id,
@@ -239,10 +239,10 @@ exports.getWallet = async (req, res, next) => {
     // }
     // console.log(obj, "req.body");
     const wallet = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({ OrganizationName: req.body.OrganizationName }),
       "wallet"
@@ -270,19 +270,20 @@ exports.postDSM1 = async (req, res, next) => {
       id: new ObjectID().toHexString(),
       docType: "DSM1",
     };
+    console.log(req.query, "Query")
     await Gateway.submitTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "CreateData",
       JSON.stringify(data)
     );
     const savedData = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         id: data.id,
@@ -307,18 +308,18 @@ exports.postDSM2 = async (req, res, next) => {
       docType: "DSM2",
     };
     await Gateway.submitTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "CreateData",
       JSON.stringify(data)
     );
     const savedData = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         id: data.id,
@@ -345,10 +346,10 @@ exports.getDSM1 = async (req, res, next) => {
     }
     console.log(obj, "req.body");
     const data = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify(obj),
       "DSM1"
@@ -379,10 +380,10 @@ exports.getDSM2 = async (req, res, next) => {
     }
     console.log(obj, "req.body");
     const data = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify(obj),
       "DSM2"

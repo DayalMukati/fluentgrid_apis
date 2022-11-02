@@ -13,18 +13,18 @@ const {
 
 const router = require('express').Router()
 //standard get & post
-router.post('/losscharge/:entity/:appUserId/:org/:channelName/:chaincodeName', postLosscharge)
-router.get('/losscharge/:entity/:appUserId/:org/:channelName/:chaincodeName', getLosscharge)
+router.post('/losscharge', postLosscharge)
+router.get('/losscharge', getLosscharge)
 
-router.post('/outage/:entity/:appUserId/:org/:channelName/:chaincodeName', postOutage)
-router.get('/outage/:entity/:appUserId/:org/:channelName/:chaincodeName', getOutage)
+router.post('/outage', postOutage)
+router.get('/outage', getOutage)
 
-router.post('/wallet/:appUserId/:org/:channelName/:chaincodeName', postWallet)
-router.get('/wallet/:appUserId/:org/:channelName/:chaincodeName', getWallet)
+router.post('/wallet', postWallet)
+router.get('/wallet', getWallet)
 
-router.post('/dsm1/:appUserId/:org/:channelName/:chaincodeName', postDSM1)
-router.get('/dsm1/:appUserId/:org/:channelName/:chaincodeName', getDSM1)
+router.post('/dsm1', postDSM1)
+router.get('/dsm1', getDSM1)
 
-router.post('/dsm2/:appUserId/:org/:channelName/:chaincodeName', postDSM2)
-router.get('/dsm2/:appUserId/:org/:channelName/:chaincodeName', getDSM2)
+router.post('/dsm2', postDSM2)
+router.get('/dsm2', getDSM2)
 module.exports = router
