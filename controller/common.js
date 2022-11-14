@@ -244,7 +244,9 @@ exports.getWallet = async (req, res, next) => {
       req.query.channelName,
       req.query.chaincodeName,
       "Find",
-      JSON.stringify({ OrganizationName: req.body.OrganizationName }),
+      JSON.stringify({
+        OrganizationName: req.body.OrganizationName
+      }),
       "wallet"
     );
     if (!wallet) {
@@ -265,12 +267,16 @@ exports.getWallet = async (req, res, next) => {
 
 exports.postDSM1 = async (req, res, next) => {
   try {
+    let text = req.body.Time;
+    const dateArray = text.split(" ")
     let data = {
       ...req.body,
       id: new ObjectID().toHexString(),
       docType: "DSM1",
+      Date: dateArray[0]
     };
-    console.log(req.query, "Query")
+
+    console.log(data, "Query")
     await Gateway.submitTransaction(
       req.query.org,
       req.query.appUserId,
@@ -302,10 +308,13 @@ exports.postDSM1 = async (req, res, next) => {
 
 exports.postDSM2 = async (req, res, next) => {
   try {
+    let text = req.body.Time;
+    const dateArray = text.split(" ")
     let data = {
       ...req.body,
       id: new ObjectID().toHexString(),
       docType: "DSM2",
+      Date: dateArray[0]
     };
     await Gateway.submitTransaction(
       req.query.org,
