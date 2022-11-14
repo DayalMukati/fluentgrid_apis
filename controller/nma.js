@@ -3,10 +3,10 @@ const Gateway = require("../utils/gateway");
 
 exports.getNmaById = async (req, res, next, name) => {
   try {
-    const nma = await Gateway.evaluateTransaction(req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+    const nma = await Gateway.evaluateTransaction(req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         Name: name,
@@ -20,17 +20,17 @@ exports.getNmaById = async (req, res, next, name) => {
   }
 };
 
-exports.getNmabyName = async (req, res, next, name) => {
+exports.getNmabyName = async (req, res, next) => {
   try {
-    console.log(req.params)
+    console.log(req.query)
     const nma = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
-        Name: name,
+        Name: req.query.name,
       }),
       "nma"
     );
@@ -51,10 +51,10 @@ exports.getNmabyName = async (req, res, next, name) => {
 };
 exports.getAllNmas = async (req, res, next) => {
   try {
-    const nmas = await Gateway.evaluateTransaction(req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+    const nmas = await Gateway.evaluateTransaction(req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "GetAll", "nma");
     res.json({
       success: true,
@@ -70,10 +70,10 @@ exports.postNma = async (req, res, next) => {
     req.body.docType = "nma";
     const id = req.body.id;
     const duplicateData = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         Name: req.body.Name,
@@ -81,15 +81,15 @@ exports.postNma = async (req, res, next) => {
       "nma"
     );
     if (!duplicateData[0]) {
-      await Gateway.submitTransaction(req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+      await Gateway.submitTransaction(req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "CreateData", JSON.stringify(req.body));
-      const savedData = await Gateway.evaluateTransaction(req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+      const savedData = await Gateway.evaluateTransaction(req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "Find",
         JSON.stringify({
           id: id,
@@ -120,10 +120,10 @@ exports.updateNma = async (req, res, next) => {
     if (req.nma.WheelingLossCharges) {
       nmaObj["WheelingLossCharges"].push(req.body.WheelingLossCharges);
     }
-    await Gateway.submitTransaction(req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,"UpdateData", JSON.stringify(nmaObj));
+    await Gateway.submitTransaction(req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName, "UpdateData", JSON.stringify(nmaObj));
     res.status(201).json({
       success: true,
       updatedNma: nmaObj,
@@ -136,11 +136,14 @@ exports.updateNma = async (req, res, next) => {
 exports.deleteNma = async (req, res, next) => {
   try {
     // put req.body into  update function and send back to client
-    await Gateway.deleteTransaction(req.params.org,
-		req.params.appUserId,
-		req.params.channelName,
-		req.params.chaincodeName,
-		"DeleteAsset", req.nma.id);
+    await Gateway.deleteTransaction(
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
+      "DeleteAsset",
+      req.query.name
+    );
     res.json({
       msg: "Item Deleted",
     });

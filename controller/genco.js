@@ -4,10 +4,10 @@ const Gateway = require("../utils/gateway");
 exports.getGencoById = async (req, res, next, name) => {
   try {
     const genco = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         Name: name,
@@ -21,16 +21,16 @@ exports.getGencoById = async (req, res, next, name) => {
   }
 };
 
-exports.getGencobyName = async (req, res, next, name) => {
+exports.getGencobyName = async (req, res, next) => {
   try {
     const genco = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
-        Name: name,
+        Name: req.query.name,
       }),
       "genco"
     );
@@ -52,10 +52,10 @@ exports.getGencobyName = async (req, res, next, name) => {
 exports.getAllGencos = async (req, res, next) => {
   try {
     const gencos = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "GetAll",
       "genco"
     );
@@ -73,10 +73,10 @@ exports.postGenco = async (req, res, next) => {
     req.body.docType = "genco";
     const id = req.body.id;
     const duplicateData = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         Name: req.body.Name,
@@ -85,18 +85,18 @@ exports.postGenco = async (req, res, next) => {
     );
     if (!duplicateData[0]) {
       await Gateway.submitTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+        req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "CreateData",
         JSON.stringify(req.body)
       );
       const savedData = await Gateway.evaluateTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+        req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "Find",
         JSON.stringify({
           id: id,
@@ -127,10 +127,10 @@ exports.updateGenco = async (req, res, next) => {
     if (req.genco.BlockWiseDetails) {
       gencoObj["BlockWiseDetails"].push(req.body.BlockWiseDetails);
     }
-    await Gateway.submitTransaction(req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,"UpdateData", JSON.stringify(gencoObj));
+    await Gateway.submitTransaction(req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName, "UpdateData", JSON.stringify(gencoObj));
     res.status(201).json({
       success: true,
       updatedGenco: gencoObj,
@@ -145,29 +145,29 @@ exports.postLosses = async (req, res, next) => {
     req.body.id = new ObjectID().toHexString();
     const id = req.body.id;
     req.body.docType = "lossesconf";
-      await Gateway.submitTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
-        "CreateData",
-        JSON.stringify(req.body)
-      );
-      const savedLossesConf = await Gateway.evaluateTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
-        "Find",
-        JSON.stringify({
-          id: id,
-        }),
-        "lossesconf"
-      );
-      res.status(201).json({
-        success: true,
-        savedLossesConf: savedLossesConf[0],
-      });
+    await Gateway.submitTransaction(
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
+      "CreateData",
+      JSON.stringify(req.body)
+    );
+    const savedLossesConf = await Gateway.evaluateTransaction(
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
+      "Find",
+      JSON.stringify({
+        id: id,
+      }),
+      "lossesconf"
+    );
+    res.status(201).json({
+      success: true,
+      savedLossesConf: savedLossesConf[0],
+    });
   } catch (error) {
     next(error);
   }
@@ -186,10 +186,10 @@ exports.getLosses = async (req, res, next) => {
     }
     console.log(obj, "req.body");
     const losses = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify(obj),
       "lossesconf"
@@ -218,29 +218,29 @@ exports.postgencoOutage = async (req, res, next) => {
     req.body.id = new ObjectID().toHexString();
     const id = req.body.id;
     req.body.docType = "gencooutage";
-      await Gateway.submitTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
-        "CreateData",
-        JSON.stringify(req.body)
-      );
-      const savedOutage = await Gateway.evaluateTransaction(
-        req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
-        "Find",
-        JSON.stringify({
-          id: id,
-        }),
-        "gencooutage"
-      );
-      res.status(201).json({
-        success: true,
-        savedOutage: savedOutage[0],
-      });
+    await Gateway.submitTransaction(
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
+      "CreateData",
+      JSON.stringify(req.body)
+    );
+    const savedOutage = await Gateway.evaluateTransaction(
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
+      "Find",
+      JSON.stringify({
+        id: id,
+      }),
+      "gencooutage"
+    );
+    res.status(201).json({
+      success: true,
+      savedOutage: savedOutage[0],
+    });
   } catch (error) {
     next(error);
   }
@@ -259,10 +259,10 @@ exports.getgencoOutage = async (req, res, next) => {
     }
     console.log(obj, "req.body");
     const outages = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify(obj),
       "gencooutage"
@@ -289,12 +289,12 @@ exports.deleteGenco = async (req, res, next) => {
   try {
     // put req.body into  update function and send back to client
     await Gateway.deleteTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "DeleteAsset",
-      req.consumer.id
+      req.query.name
     );
     res.json({
       msg: "Item Deleted",

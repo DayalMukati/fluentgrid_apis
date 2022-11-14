@@ -1,11 +1,14 @@
-const { postOutage, getOutage } = require('../controller/common.js');
 const {
-    getGencoById,
+	postOutage,
+	getOutage
+} = require('../controller/common.js');
+const {
+	getGencoById,
 	getAllGencos,
 	postGenco,
 	deleteGenco,
 	updateGenco,
-    getGencobyName,
+	getGencobyName,
 	postLosses,
 	postgencoOutage,
 	getLosses,
@@ -17,17 +20,17 @@ const router = require('express').Router()
 // router.param('name', getGencobyName);
 // router.param('gencoId', getGencoById)
 //standard get & post
-router.post('/:appUserId/:org/:channelName/:chaincodeName', postGenco)
-router.get('/:appUserId/:org/:channelName/:chaincodeName', getAllGencos)
-router.get('/:name/:appUserId/:org/:channelName/:chaincodeName', getGencobyName)
-router.put('/:gencoId/:appUserId/:org/:channelName/:chaincodeName', updateGenco)
-router.delete('/:gencoId', deleteGenco),
+router.post('/', postGenco)
+router.get('/', getAllGencos)
+router.get('/name', getGencobyName)
+router.put('/', updateGenco)
+router.delete('/', deleteGenco)
 
-router.post('/lossesconf/:appUserId/:org/:channelName/:chaincodeName', postLosses)
-router.get('/lossesconf/:appUserId/:org/:channelName/:chaincodeName', getLosses)
+router.post('/lossesconf', postLosses)
+router.get('/lossesconf', getLosses)
 
-router.post('/outages/:appUserId/:org/:channelName/:chaincodeName', postgencoOutage)
-router.get('/outages/:appUserId/:org/:channelName/:chaincodeName', getgencoOutage)
+router.post('/outages', postgencoOutage)
+router.get('/outages', getgencoOutage)
 
 
 module.exports = router

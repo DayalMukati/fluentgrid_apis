@@ -1,7 +1,11 @@
 const path = require('path');
 const helmet = require('helmet');
-const { logger } = require('./config/logger');
-const { connectToFabric } = require('./utils/gateway');
+const {
+	logger
+} = require('./config/logger');
+const {
+	connectToFabric
+} = require('./utils/gateway');
 
 const cors = require('cors');
 const morgan = require('morgan');
@@ -39,7 +43,10 @@ app.use(
 //security middleware
 app.use(helmet());
 app.use(cors());
-const { errorHandler, notFound } = require('./middleware/error.js');
+const {
+	errorHandler,
+	notFound
+} = require('./middleware/error.js');
 
 app.get('/', (req, res) => {
 	res.send('🌐🌐');
@@ -62,7 +69,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 //Port
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
 	logger.info(`server started at ${port} on pid ${process.pid}`);
 	// logger.info(`worker ${process.pid} started`)

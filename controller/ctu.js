@@ -3,10 +3,10 @@ const Gateway = require("../utils/gateway");
 
 exports.getCtuById = async (req, res, next, name) => {
   try {
-    const ctu = await Gateway.evaluateTransaction(req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+    const ctu = await Gateway.evaluateTransaction(req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         Name: name,
@@ -20,17 +20,17 @@ exports.getCtuById = async (req, res, next, name) => {
   }
 };
 
-exports.getCtubyName = async (req, res, next, name) => {
+exports.getCtubyName = async (req, res, next) => {
   try {
-    console.log(req.params)
+    console.log(req.query)
     const ctu = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
-        Name: name,
+        Name: req.query.name,
       }),
       "ctu"
     );
@@ -51,10 +51,10 @@ exports.getCtubyName = async (req, res, next, name) => {
 };
 exports.getAllCtus = async (req, res, next) => {
   try {
-    const ctus = await Gateway.evaluateTransaction(req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+    const ctus = await Gateway.evaluateTransaction(req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "GetAll", "ctu");
     res.json({
       success: true,
@@ -70,10 +70,10 @@ exports.postCtu = async (req, res, next) => {
     req.body.docType = "ctu";
     const id = req.body.id;
     const duplicateCtu = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         Name: req.body.Name,
@@ -81,15 +81,15 @@ exports.postCtu = async (req, res, next) => {
       "ctu"
     );
     if (!duplicateCtu[0]) {
-      await Gateway.submitTransaction(req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+      await Gateway.submitTransaction(req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "CreateData", JSON.stringify(req.body));
-      const savedCtu = await Gateway.evaluateTransaction(req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+      const savedCtu = await Gateway.evaluateTransaction(req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "Find",
         JSON.stringify({
           id: id,
@@ -112,17 +112,25 @@ exports.postCtu = async (req, res, next) => {
 };
 exports.updateCtu = async (req, res, next) => {
   try {
-    var ctuObj = req.ctu;
-    // if(req.ctu.PoCLossCharges){
-    // 	ctuObj['PoCLossCharges'].push(req.body.PoCLossCharges);
-    // }
-    if (req.ctu.CTUWallet) {
+    const data = await Gateway.evaluateTransaction(
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
+      "Find",
+      JSON.stringify({
+        Name: req.query.name,
+      }),
+      "ctu"
+    );
+    var ctuObj = data[0];
+    if (ctuObj.CTUWallet) {
       ctuObj["CTUWallet"].push(req.body.CTUWallet);
     }
-    await Gateway.submitTransaction(req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,"UpdateData", JSON.stringify(ctuObj));
+    await Gateway.submitTransaction(req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName, "UpdateData", JSON.stringify(ctuObj));
     res.status(201).json({
       success: true,
       updatedCtu: ctuObj,
@@ -134,7 +142,14 @@ exports.updateCtu = async (req, res, next) => {
 exports.deleteCtu = async (req, res, next) => {
   try {
     // put req.body into  update function and send back to client
-    await Gateway.deleteTransaction("DeleteAsset", req.ctu.id);
+    await Gateway.deleteTransaction(
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
+      "DeleteAsset",
+      req.query.name
+    );
     res.json({
       msg: "Item Deleted",
     });

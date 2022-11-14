@@ -3,10 +3,10 @@ const Gateway = require("../utils/gateway");
 
 exports.getRldcById = async (req, res, next, name) => {
   try {
-    const rldc = await Gateway.evaluateTransaction(req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+    const rldc = await Gateway.evaluateTransaction(req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         Name: name,
@@ -22,12 +22,12 @@ exports.getRldcById = async (req, res, next, name) => {
 
 exports.getRldcbyName = async (req, res, next, name) => {
   try {
-    console.log(req.params)
+    console.log(req.query)
     const rldc = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         Name: name,
@@ -51,10 +51,10 @@ exports.getRldcbyName = async (req, res, next, name) => {
 };
 exports.getAllRldcs = async (req, res, next) => {
   try {
-    const rldcs = await Gateway.evaluateTransaction(req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+    const rldcs = await Gateway.evaluateTransaction(req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "GetAll", "rldc");
     res.json({
       success: true,
@@ -70,10 +70,10 @@ exports.postRldc = async (req, res, next) => {
     req.body.docType = "rldc";
     const id = req.body.id;
     const duplicateData = await Gateway.evaluateTransaction(
-      req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
       "Find",
       JSON.stringify({
         Name: req.body.Name,
@@ -81,15 +81,15 @@ exports.postRldc = async (req, res, next) => {
       "rldc"
     );
     if (!duplicateData[0]) {
-      await Gateway.submitTransaction(req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+      await Gateway.submitTransaction(req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "CreateData", JSON.stringify(req.body));
-      const savedData = await Gateway.evaluateTransaction(req.params.org,
-        req.params.appUserId,
-        req.params.channelName,
-        req.params.chaincodeName,
+      const savedData = await Gateway.evaluateTransaction(req.query.org,
+        req.query.appUserId,
+        req.query.channelName,
+        req.query.chaincodeName,
         "Find",
         JSON.stringify({
           id: id,
@@ -120,10 +120,10 @@ exports.updateRldc = async (req, res, next) => {
     if (req.rldc.RLDCCharges) {
       rldcObj["RLDCCharges"].push(req.body.RLDCCharges);
     }
-    await Gateway.submitTransaction(req.params.org,
-      req.params.appUserId,
-      req.params.channelName,
-      req.params.chaincodeName,"UpdateData", JSON.stringify(rldcObj));
+    await Gateway.submitTransaction(req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName, "UpdateData", JSON.stringify(rldcObj));
     res.status(201).json({
       success: true,
       updatedRldc: rldcObj,
@@ -136,11 +136,11 @@ exports.updateRldc = async (req, res, next) => {
 exports.deleteRldc = async (req, res, next) => {
   try {
     // put req.body into  update function and send back to client
-    await Gateway.deleteTransaction(req.params.org,
-		req.params.appUserId,
-		req.params.channelName,
-		req.params.chaincodeName,
-		"DeleteAsset", req.rldc.id);
+    await Gateway.deleteTransaction(req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
+      "DeleteAsset", req.query.name);
     res.json({
       msg: "Item Deleted",
     });
