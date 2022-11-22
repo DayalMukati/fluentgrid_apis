@@ -1,4 +1,5 @@
 const path = require('path');
+const cron = require('node-cron');
 const helmet = require('helmet');
 const {
 	logger
@@ -22,7 +23,12 @@ const stuRoutes = require('./routes/stu');
 const adminRoutes = require('./routes/admin');
 const commonRoutes = require('./routes/common')
 
-//connectToFabric();
+const {
+	channelOnecron: channelone
+} = require('./controller/cronjobs');
+
+//Cron Schedule
+cron.schedule('5 8 * * 0', channelone);
 
 const express = require('express');
 const app = express();

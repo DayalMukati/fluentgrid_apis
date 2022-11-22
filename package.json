@@ -19,7 +19,9 @@
     "fabric-network": "^2.2.15",
     "helmet": "^6.0.0",
     "logger": "0.0.1",
+    "moment": "^2.29.4",
     "morgan": "^1.10.0",
+    "node-cron": "^3.0.2",
     "request": "^2.88.2",
     "uuid": "^8.3.2",
     "winston": "^3.8.2"

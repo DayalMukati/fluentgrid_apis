@@ -1,5 +1,6 @@
 const ObjectID = require("bson-objectid");
 const Gateway = require("../utils/gateway");
+var moment = require('moment');
 
 exports.postLosscharge = async (req, res, next) => {
   try {
@@ -363,6 +364,7 @@ exports.getDSM1 = async (req, res, next) => {
       JSON.stringify(obj),
       "DSM1"
     );
+
     if (!data) {
       res.status(400).json({
         success: false,
@@ -412,3 +414,228 @@ exports.getDSM2 = async (req, res, next) => {
     next(error);
   }
 };
+
+async function calculateBill(AccountNumber, date, org, appUserId, channelName, chaincodeName) {
+  try {
+    console.log(AccountNumber, date)
+    const consumer = await Gateway.evaluateTransaction(
+      org,
+      appUserId,
+      channelName,
+      chaincodeName,
+      "Find",
+      JSON.stringify({
+        AccountNumber: AccountNumber,
+      }),
+      "consumer"
+    );
+    if (consumer[0]) {
+      let data;
+      data = {
+        id: new ObjectID().toHexString(),
+        CTU: consumer[0].ConsumerPackDetails[0].DeliveryPath.CTU,
+        STU: consumer[0].ConsumerPackDetails[0].DeliveryPath.STU,
+        NMA: consumer[0].ConsumerPackDetails[0].DeliveryPath.NMA,
+        GENCO: consumer[0].ConsumerPackDetails[0].DeliveryPath.GENCO,
+        date: date,
+        AccountNumber: AccountNumber
+      }
+
+      //Get NMA Charges
+      if (consumer[0].ConsumerPackDetails[0].DeliveryPath.NMA) {
+        let nmaCharges = await Gateway.evaluateTransaction(
+          org,
+          appUserId,
+          channelName,
+          chaincodeName,
+          "Find",
+          JSON.stringify({
+            Name: data.NMA
+          }),
+          "nmalosscharge"
+        );
+        if (Array.isArray(nmaCharges) && nmaCharges.length > 0) {
+          console.log("inside")
+          const nma = nmaCharges.reduce((a, b) => a.ToDate > b.ToDate ? a : b);
+          data.nmaCharge = nma.Charges;
+        }
+
+        let nmaWallet = await Gateway.evaluateTransaction(
+          org,
+          appUserId,
+          channelName,
+          chaincodeName,
+          "Find",
+          JSON.stringify({
+            OrganizationName: data.NMA
+          }),
+          "wallet"
+        );
+        data.nmaWallet = nmaWallet[0].id;
+      }
+      //Get CTU Charges
+      if (consumer[0].ConsumerPackDetails[0].DeliveryPath.CTU) {
+        let ctuCharges = await Gateway.evaluateTransaction(
+          org,
+          appUserId,
+          channelName,
+          chaincodeName,
+          "Find",
+          JSON.stringify({
+            Name: data.CTU
+          }),
+          "ctulosscharge"
+        );
+
+        if (Array.isArray(ctuCharges) && ctuCharges.length > 0) {
+          console.log("inside")
+          const ctu = ctuCharges.reduce((a, b) => a.ToDate > b.ToDate ? a : b);
+          data.ctuCharge = ctu.Charges;
+        }
+
+        let ctuWallet = await Gateway.evaluateTransaction(
+          org,
+          appUserId,
+          channelName,
+          chaincodeName,
+          "Find",
+          JSON.stringify({
+            OrganizationName: data.CTU
+          }),
+          "wallet"
+        );
+        data.ctuWallet = ctuWallet[0].id;
+      }
+      //Get STU Charges
+      if (consumer[0].ConsumerPackDetails[0].DeliveryPath.STU) {
+        let stuCharges = await Gateway.evaluateTransaction(
+          org,
+          appUserId,
+          channelName,
+          chaincodeName,
+          "Find",
+          JSON.stringify({
+            Name: data.STU
+          }),
+          "stulosscharge"
+        );
+        if (Array.isArray(stuCharges) && stuCharges.length > 0) {
+          console.log("inside")
+          const stu = stuCharges.reduce((a, b) => a.ToDate > b.ToDate ? a : b);
+          data.stuCharge = stu.Charges;
+        }
+
+        let stuWallet = await Gateway.evaluateTransaction(
+          org,
+          appUserId,
+          channelName,
+          chaincodeName,
+          "Find",
+          JSON.stringify({
+            OrganizationName: data.STU
+          }),
+          "wallet"
+        );
+        data.stuWallet = stuWallet[0].id;
+      }
+
+      //Get Billing Data
+      let billData = await Gateway.evaluateTransaction(
+        org,
+        appUserId,
+        channelName,
+        chaincodeName,
+        "Find",
+        JSON.stringify({
+          AccountNumber: req.body.AccountNumber,
+          BillingDate: req.body.date
+        }),
+        "dailybill"
+      );
+      data.billedUnits = billData[0].BilledUnits
+      data.TotalCharge = billData[0].TotalCharge
+
+      let gencoWallet = await Gateway.evaluateTransaction(
+        org,
+        appUserId,
+        channelName,
+        chaincodeName,
+        "Find",
+        JSON.stringify({
+          OrganizationName: data.GENCO
+        }),
+        "wallet"
+      );
+      data.gencoWallet = gencoWallet[0].id;
+      console.log(data, "data")
+
+      await Gateway.submitTransaction(
+        org,
+        appUserId,
+        channelName,
+        chaincodeName,
+        "billSettel",
+        JSON.stringify(data)
+      );
+
+      const savedData = await Gateway.evaluateTransaction(
+        org,
+        appUserId,
+        channelName,
+        chaincodeName,
+        "Find",
+        JSON.stringify({
+          id: data.id,
+        }),
+        "billsettel"
+      );
+
+      res.status(201).json({
+        success: true,
+        savedData: savedData[0],
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        meg: "Record not Found",
+      });
+    }
+  } catch (error) {
+
+  }
+
+}
+
+exports.calculationCron = async (data) => {
+  try {
+    console.log(data, "data")
+    let consumers = await Gateway.evaluateTransaction(
+      data.org,
+      data.appUserId,
+      data.channelName,
+      data.chaincodeName,
+      "GetAll",
+      "consumer"
+    );
+    const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+    const currentMoment = moment().subtract(6, 'days');
+    const endMoment = moment().add(1, 'days');
+    while (currentMoment.isBefore(endMoment, 'day')) {
+
+      consumers.forEach(async (consumer) => {
+        let AccountNumber = consumer.AccountNumber;
+        let date = currentMoment.format('MM/DD/YYYY');
+
+        await calculateBill(AccountNumber, date, data.org, data.appUserId, data.channelName, data.chaincodeName);
+
+      });
+      currentMoment.add(1, 'days');
+      await sleep(2000)
+
+    }
+
+  } catch (error) {
+
+    return error
+  }
+}
