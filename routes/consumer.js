@@ -1,11 +1,11 @@
 const {
-    getConsumerById,
+	getConsumerById,
 	getAllConsumers,
 	postConsumer,
 	deleteConsumer,
 	updateConsumer,
 	updateMonthly,
-    getConsumerbyName,
+	getConsumerbyName,
 	updateWallet,
 	updatePack,
 	dailyBill,
@@ -22,7 +22,7 @@ const {
 
 const router = require('express').Router()
 
-router.param('name', getConsumerbyName);
+//router.param('AccountNumber', getConsumerbyName);
 //router.param('accountNo', getConsumerById)
 //standard get & post
 router.post('/', postConsumer)
@@ -30,7 +30,7 @@ router.post('/bill', dailyBill)
 router.post('/recharge', createRecharge)
 router.post('/adjust', createAdjust)
 router.get('/', getAllConsumers)
-router.get('/name', getConsumerbyName)
+router.get('/account', getConsumerbyName)
 router.get('/bill', getBill)
 router.get('/recharge', getRecharge)
 router.get('/adjust', getAdjust)
@@ -40,7 +40,7 @@ router.put('/monthly', updateMonthly)
 router.put('/wallet', updateWallet)
 router.delete('/', deleteConsumer),
 
-router.post('/charges', postCharges)
+	router.post('/charges', postCharges)
 router.get('/charges', getCharges)
 
 router.post('/meter', postMeter)

@@ -21,7 +21,7 @@ exports.getConsumerById = async (req, res, next, accountNo) => {
   }
 };
 
-exports.getConsumerbyName = async (req, res, next, accountNo) => {
+exports.getConsumerbyName = async (req, res, next) => {
   try {
     console.log(req.query);
     const consumer = await Gateway.evaluateTransaction(
@@ -31,7 +31,7 @@ exports.getConsumerbyName = async (req, res, next, accountNo) => {
       req.query.chaincodeName,
       "Find",
       JSON.stringify({
-        AccountNumber: accountNo,
+        AccountNumber: req.query.AccountNumber
       }),
       "consumer"
     );
@@ -348,7 +348,9 @@ exports.getBill = async (req, res, next) => {
       req.query.channelName,
       req.query.chaincodeName,
       "Find",
-      JSON.stringify({ MeterNo: req.body.MeterNo }),
+      JSON.stringify({
+        MeterNo: req.body.MeterNo
+      }),
       "dailybill"
     );
     if (!bill) {
