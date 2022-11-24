@@ -348,12 +348,15 @@ exports.postDSM2 = async (req, res, next) => {
 
 exports.getDSM1 = async (req, res, next) => {
   try {
-    let obj = req.body;
-    for (var propName in obj) {
-      if (obj[propName] === null || obj[propName] === "") {
-        delete obj[propName];
-      }
+    let obj = {
+      NMAId: req.query.NMAId,
+      Date: req.query.date
     }
+    // for (var propName in obj) {
+    //   if (obj[propName] === null || obj[propName] === "") {
+    //     delete obj[propName];
+    //   }
+    // }
     console.log(obj, "req.body");
     const data = await Gateway.evaluateTransaction(
       req.query.org,
@@ -383,12 +386,15 @@ exports.getDSM1 = async (req, res, next) => {
 
 exports.getDSM2 = async (req, res, next) => {
   try {
-    let obj = req.body;
-    for (var propName in obj) {
-      if (obj[propName] === null || obj[propName] === "") {
-        delete obj[propName];
-      }
+    let obj = {
+      NMAId: req.query.NMAId,
+      Date: req.query.date
     }
+    // for (var propName in obj) {
+    //   if (obj[propName] === null || obj[propName] === "") {
+    //     delete obj[propName];
+    //   }
+    // }
     console.log(obj, "req.body");
     const data = await Gateway.evaluateTransaction(
       req.query.org,

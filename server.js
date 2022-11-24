@@ -28,7 +28,7 @@ const {
 } = require('./controller/cronjobs');
 
 //Cron Schedule
-cron.schedule('5 8 * * 0', channelone);
+//cron.schedule('5 8 * * 0', channelone);
 
 const express = require('express');
 const app = express();
