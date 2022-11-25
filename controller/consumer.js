@@ -349,7 +349,7 @@ exports.getBill = async (req, res, next) => {
       req.query.chaincodeName,
       "Find",
       JSON.stringify({
-        MeterNo: req.body.MeterNo
+        MeterNo: req.query.MeterNo
       }),
       "dailybill"
     );
@@ -359,16 +359,16 @@ exports.getBill = async (req, res, next) => {
         msg: "No Record Found",
       });
     } else {
-      var startDate = req.body.startDate;
-      var endDate = req.body.endDate;
+      // var startDate = req.body.startDate;
+      // var endDate = req.body.endDate;
 
-      var resultBillData = bill.filter(function (a) {
-        return a.BillingDate >= startDate && a.BillingDate <= endDate;
-      });
+      // var resultBillData = bill.filter(function (a) {
+      //   return a.BillingDate >= startDate && a.BillingDate <= endDate;
+      // });
 
       res.status(200).json({
         success: true,
-        bills: resultBillData,
+        bills: bill,
       });
     }
   } catch (error) {
@@ -430,21 +430,23 @@ exports.createRecharge = async (req, res, next) => {
 
 exports.getRecharge = async (req, res, next) => {
   try {
-    console.log(req.body, "req.body");
-    let obj = req.body;
-    for (var propName in obj) {
-      if (obj[propName] === null || obj[propName] === "") {
-        delete obj[propName];
-      }
-    }
-    console.log(obj, "req.body");
+    // console.log(req.body, "req.body");
+    // let obj = req.body;
+    // for (var propName in obj) {
+    //   if (obj[propName] === null || obj[propName] === "") {
+    //     delete obj[propName];
+    //   }
+    // }
+    // console.log(obj, "req.body");
     const recharge = await Gateway.evaluateTransaction(
       req.query.org,
       req.query.appUserId,
       req.query.channelName,
       req.query.chaincodeName,
       "Find",
-      JSON.stringify(obj),
+      JSON.stringify({
+        MeterNo: req.query.MeterNo
+      }),
       "recharge"
     );
     if (!recharge) {
@@ -517,21 +519,23 @@ exports.createAdjust = async (req, res, next) => {
 
 exports.getAdjust = async (req, res, next) => {
   try {
-    console.log(req.body, "req.body");
-    let obj = req.body;
-    for (var propName in obj) {
-      if (obj[propName] === null || obj[propName] === "") {
-        delete obj[propName];
-      }
-    }
-    console.log(obj, "req.body");
+    // console.log(req.body, "req.body");
+    // let obj = req.body;
+    // for (var propName in obj) {
+    //   if (obj[propName] === null || obj[propName] === "") {
+    //     delete obj[propName];
+    //   }
+    // }
+    // console.log(obj, "req.body");
     const adjustment = await Gateway.evaluateTransaction(
       req.query.org,
       req.query.appUserId,
       req.query.channelName,
       req.query.chaincodeName,
       "Find",
-      JSON.stringify(obj),
+      JSON.stringify({
+        MeterNo: req.query.MeterNo
+      }),
       "adjustment"
     );
     if (!adjustment) {
