@@ -268,39 +268,49 @@ exports.getWallet = async (req, res, next) => {
 
 exports.postDSM1 = async (req, res, next) => {
   try {
-    let text = req.body.Time;
+    let dsm1s = req.body;
+    dsm1s.forEach(async (dsm1) => {
+    let text = dsm1.Time;
     const dateArray = text.split(" ")
-    let data = {
-      ...req.body,
-      id: new ObjectID().toHexString(),
+    let predata = {
+      id:new ObjectID().toHexString(),
       docType: "DSM1",
       Date: dateArray[0]
     };
 
-    console.log(data, "Query")
-    await Gateway.submitTransaction(
+    let data = {...dsm1, ...predata}
+    // console.log(data);
+    const obj = {
+      NMAId: dsm1.NMAId,
+      StageId: dsm1.StageId,
+      Time: dsm1.Time
+    }
+    const duplicateData = await Gateway.evaluateTransaction(
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
+      "Find",
+      JSON.stringify(obj),
+      "DSM1"
+    );
+
+    if(duplicateData[0]){
+      console.log("Duplicate")
+    } else{
+      await Gateway.submitTransaction(
       req.query.org,
       req.query.appUserId,
       req.query.channelName,
       req.query.chaincodeName,
       "CreateData",
       JSON.stringify(data)
-    );
-    const savedData = await Gateway.evaluateTransaction(
-      req.query.org,
-      req.query.appUserId,
-      req.query.channelName,
-      req.query.chaincodeName,
-      "Find",
-      JSON.stringify({
-        id: data.id,
-      }),
-      "DSM1"
-    );
+    );}
 
+    });
     res.status(201).json({
       success: true,
-      savedData: savedData[0],
+      message: "Data has been stored in Blockchain.",
     });
   } catch (error) {
     next(error);
@@ -309,37 +319,50 @@ exports.postDSM1 = async (req, res, next) => {
 
 exports.postDSM2 = async (req, res, next) => {
   try {
-    let text = req.body.Time;
+    let dsm2s = req.body;
+    dsm2s.forEach(async (dsm2) => {
+    let text = dsm2.Time;
     const dateArray = text.split(" ")
-    let data = {
-      ...req.body,
-      id: new ObjectID().toHexString(),
+    let predata = {
+      id:new ObjectID().toHexString(),
       docType: "DSM2",
       Date: dateArray[0]
     };
-    await Gateway.submitTransaction(
+
+    let data = {...dsm2, ...predata}
+    // console.log(data);
+    const obj = {
+      NMAId: dsm2.NMAId,
+      StageId: dsm2.StageId,
+      Time: dsm2.Time
+    }
+    const duplicateData = await Gateway.evaluateTransaction(
+      req.query.org,
+      req.query.appUserId,
+      req.query.channelName,
+      req.query.chaincodeName,
+      "Find",
+      JSON.stringify(obj),
+      "DSM2"
+    );
+
+    if(duplicateData[0]){
+      console.log("Duplicate")
+    } else{
+      await Gateway.submitTransaction(
       req.query.org,
       req.query.appUserId,
       req.query.channelName,
       req.query.chaincodeName,
       "CreateData",
       JSON.stringify(data)
-    );
-    const savedData = await Gateway.evaluateTransaction(
-      req.query.org,
-      req.query.appUserId,
-      req.query.channelName,
-      req.query.chaincodeName,
-      "Find",
-      JSON.stringify({
-        id: data.id,
-      }),
-      "DSM2"
-    );
+    );}
+
+    });
 
     res.status(201).json({
       success: true,
-      savedData: savedData[0],
+      smessage: "Data has been stored in Blockchain.",
     });
   } catch (error) {
     next(error);
